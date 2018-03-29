@@ -1,0 +1,35 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - CV Change Permissions{% endblock %}
+
+{% block base_content %}
+    {% permission cv 1 %}
+    <h1>Change Permissions</h1>
+    <h2>Position: {{ position }}</h2>
+    <form action="{% url erp_position_permissions pos_id=position.id %}" method="POST">
+        {% csrf_token %}
+        <dl class="dl-horizontal">
+        {% for field in perms_form %}
+            <dt>{{ field }}</dt>
+            <dd>{{ field.label_tag }}</dd>
+        {% endfor %}
+        </dl>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a class="btn" href="{% url erp_positions %}"><i class="icon-backward"></i> Back</a>&emsp;
+        <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+    {% not_permission %}
+    <h1>View Permissions</h1>
+    <h2>Position: {{ position }}</h2>
+    <dl class="dl-horizontal">
+    {% for perm, flag in perms %}
+        <dt>{% if flag %}<span class="badge badge-success"><i class="icon-ok-circle"></i> Yes</span>{% else %}<span class="badge badge-warning"><i class="icon-ban-circle"></i> No</span>{% endif %}</dt>
+        <dd>{{ perm }}</dd>
+    {% endfor %}
+    </dl>
+    {% endpermission %}
+{% endblock %}

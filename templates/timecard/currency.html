@@ -1,0 +1,51 @@
+{% if active %}
+<div class="widget">
+
+{% if office in bel%}
+<table width="220" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+<tr><td>
+<div style="padding: 10px;">
+<a href="http://www.obmennik.by" target=_blank title="Курс валют в обменниках Беларуси"> <img src="http://www.obmennik.by/images/kurs/bestkurs200x1551.png" width="200" height="155" border="0" alt="Лучший курс обмена в банках Беларуси"></a>
+</div>
+</td></tr>
+</table>
+{% endif %}
+
+{% if office in rus%}
+<style>
+.small_1355812529 {
+	FONT-SIZE:14px; FONT-FAMILY: arial
+}
+.norm_1355812529{
+	FONT-SIZE:16px; FONT-FAMILY: arial
+}
+.txt_1355812529{
+	FONT-SIZE:15px; FONT-FAMILY: Arial, Helvetica, sans-serif; font-weight: bold
+}
+</style>
+
+
+<table border='0' cellspacing='0' cellpadding='3' style='border-color: #000000; border-width: 1px; border-style: solid;BACKGROUND-COLOR: #FFFFFF;color:#000000;'>
+	<tr style='BACKGROUND-COLOR: #FFFFFF;' align='center'>
+		<td colspan='3'>
+			<span style='text-decoration:none;font-size:9px;font-weight: bold;color:#000000;BACKGROUND-COLOR: #FFFFFF;'>Курс Валют</span>
+		</td>
+	</tr>
+	<tr align='center'>
+		<td valign='top' colspan='2' align='left'>
+			<a href='http://time-clock.biz/kursy/rub' id='interchange_link_1355812529'><span class='small_1355812529' >Российский рубль</span></a>
+		</td>
+		<td><img src='http://time-clock.biz/img/RUB.gif' width='20' height='14' border='0' alt='Российский рубль валюта России' style='cursor:none;'><tr align='center' title=''><td><img src='http://time-clock.biz/img/EUR.gif' width='20' height='14' border='0' alt=''></td><td class='norm_1355812529'>(EUR)</td><td class='txt_1355812529'><b id='insert_rate_EUR_1355812529'>//-//</b></td></tr><tr align='center' title=''><td><img src='http://time-clock.biz/img/USD.gif' width='20' height='14' border='0' alt=''></td><td class='norm_1355812529'>(USD)</td><td class='txt_1355812529'><b id='insert_rate_USD_1355812529'>//-//</b></td></tr><tr align='center' title=''><td><img src='http://time-clock.biz/img/CZK.gif' width='20' height='14' border='0' alt=''></td><td class='norm_1355812529'>(CZK)</td><td class='txt_1355812529'><b id='insert_rate_CZK_1355812529'>//-//</b></td></tr><tr align='center' title=''><td><img src='http://time-clock.biz/img/GBP.gif' width='20' height='14' border='0' alt=''></td><td class='norm_1355812529'>(GBP)</td><td class='txt_1355812529'><b id='insert_rate_GBP_1355812529'>//-//</b></td></tr></td>
+	</tr>
+	<tr align='center'>
+		<td colspan='3'>
+			<span id='rate_echo_kurs_insert_html_1355812529'></span>
+			<script language='JavaScript' src='http://fast.time-clock.biz/script.php?go=get_informer&id=143266'>
+</script>
+		</td>
+	</tr>
+</table>
+{% endif %}
+
+</div>
+{% endif %}

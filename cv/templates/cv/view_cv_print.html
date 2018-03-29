@@ -1,0 +1,167 @@
+{% extends "erp/base_print.html" %}
+
+{% block page_title %}{{ block.super }} - CV Preiew & print{% endblock %}
+
+{% block content %}
+    <h1>Curriculum Vitae of {{ view_cv.name }} {{ view_cv.surname }}</h1>
+    <small>Date of generation: {% now "jS F Y, H:i" %}</small>
+    <hr>
+    <h2>Personal Info</h2>
+    <table class="rows">
+        <tr><td class="span3">Name</td><td class="span9">{{ view_cv.name }}</td></tr>
+        <tr><td>Surname</td><td class="span9">{{ view_cv.surname }}</td></tr>
+        <tr><td>Position</td><td class="span9">{{ view_cv.position|default_if_none:"&mdash;" }}</td></tr>
+        {% if view_cv.user %}
+            <tr><td>Departament</td><td class="span9">{{ view_cv.user.dep|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td>Group</td><td class="span9">{{ view_cv.user.group|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td>Profession</td><td class="span9">{{ view_cv.user.profession|default_if_none:"&mdash;" }}</td></tr>
+        {% endif %}
+    </table>
+    <h2>Contacts</h2>
+    <table class="rows">
+    {% if view_cv.user %}
+        <tr><td class="span3">E-Mail</td><td class="span9">{{ view_cv.user.email|default_if_none:"&mdash;" }}</td></tr>
+        <tr><td class="span3">Skype Account</td><td class="span9">{{ view_cv.user.skype|default_if_none:"&mdash;" }}</td></tr>
+    {% endif %}
+    {% for contact in cv.contacts.all %}
+        <tr><td class="span3">{{ contact.name }}</td><td class="span9">{{ contact.val }}</td></tr>
+    {% endfor %}
+    </table>
+    <h2>Foreign Languages Skills</h2>
+    {% if fls %}
+        <table class="rows">
+            <thead>
+            <tr>
+                <th class="span1">#</th>
+                <th class="span3">Language</th>
+                <th class="span4">Spoken Skill</th>
+                <th class="span4">Written Skill</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fl in fls %}
+                <tr>
+                    <td class="ta_cm">{{ forloop.counter }}</td>
+                    <td>{{ fl.get_language_display }}</td>
+                    <td>{{ fl.get_spoken_display }}</td>
+                    <td>{{ fl.get_written_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>The list of your foreign languages is empty.</p>
+    {% endif %}
+    <div id="cv_skills_data">
+        <h2>Technical Expertise</h2>
+        {% if skills %}
+            <table class="rows">
+                <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span3">Skill</th>
+                    <th class="span8">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for skill in skills %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ skill.skill }}</td>
+                        <td>{% if skill.desc %}{{ skill.desc }}{% else %}&mdash;{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>The list of your technical expertise skills is empty.</p>
+        {% endif %}
+    </div>
+    <div id='certificates_data'>
+        <h2>List of Certificates</h2>
+        {% if certificates %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span2">Certificate</th>
+                        <th class="span6">Title / Description</th>
+                        <th class="span3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cert in certificates %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="span2">
+                            {% if cert.image %}
+                                <img src="{{ cert.image.url }}" width="100%">
+                            {% else %}
+                                <img src="{{ STATIC_URL }}images/erp_certificate1.jpg" width="102px">
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ cert.title }}</strong><br>
+                            <small class="muted">{{ cert.desc|truncatewords:25 }}</small></td>
+                        <td>
+                            {{ cert.date|default_if_none:"&mdash;" }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="alert alert-block alert-info">You haven`t any Certificates yet. Please add one or more Certificates data here.</p>
+            {% endif %}
+    </div>
+    <h1>List of Projects</h1>
+    {% if wgs %}
+        {% for wg in wgs %}
+        <h2>Project: <strong>{{ wg.project.title }}</strong></h2>
+        <table class="rows">
+            <tr><td>Business challenge</td><td>{{ wg.project.challenge }}</td></tr>
+            <tr><td>Role</td><td>{{ wg.role }}</td></tr>
+            <tr><td>Description</td><td>{{ wg.desc }}</td></tr>
+            <tr><td>Start Date</td><td>{{ wg.date_start|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td>Finish Date</td><td>{{ wg.date_finish|default_if_none:"&mdash;" }}</td></tr>
+        </table>
+        <h3>Project Screenshots</h3>
+        {% if wg.project.screenshots.count %}
+        <div class="colsblock">
+            {% for ss in wg.project.screenshots.all %}
+            <div class="cols c2"><img src="{{ ss.image.url }}" width="100%"><br><small>{{ ss.desc }}</small></div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>The screenshot list is empty.</p>
+        {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>The list of your projects is empty.</p>
+    {% endif %}
+    <h1>List of Previous Projects</h1>
+    {% if prev_projects %}
+        {% for pp in prev_projects %}
+        <h2>Project: <strong>{{ pp.title }}</strong></h2>
+        <table class="rows">
+            <tr><td>Business challenge</td><td>{{ pp.challenge }}</td></tr>
+            <tr><td>Role</td><td>{{ pp.role }}</td></tr>
+            <tr><td>Description</td><td>{{ pp.desc }}</td></tr>
+            <tr><td>Start Date</td><td>{{ pp.date_start|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td>Finish Date</td><td>{{ pp.date_finish|default_if_none:"&mdash;" }}</td></tr>
+        </table>
+        <h3>Screenshots</h3>
+        {% if pp.screenshots.count %}
+        <div class="colsblock">
+            {% for ss in pp.screenshots.all %}
+            <div class="cols c2"><img src="{{ ss.image.url }}" width="100%"><br><small>{{ ss.desc }}</small></div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>The screenshot list is empty.</p>
+        {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>The list of your previous projects is empty.</p>
+    {% endif %}
+{% endblock %}

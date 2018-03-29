@@ -1,0 +1,22 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Delete TE{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Technical Expertise Skills</h1>
+    <p class="alert alert-blosk"><span class="text-warning"><strong>WARNING!!!</strong> Do you want really delete this skills?<br>
+    This skill(s) will be delete from some users CV!</span></p>
+    <ul>
+        {% for skill in skills_del %}
+            <li><strong>{{ skill.name }}</strong>{% if skill.cvs.count %}&emsp;({{ skill.cvs.count }} records){% endif %}<br><small class="muted">{{ skill.desc }}</small></li>
+        {% endfor %}
+    </ul>
+    <form action="{% url erp_skills %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_skills %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

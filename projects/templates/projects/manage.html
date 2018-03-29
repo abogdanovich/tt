@@ -1,0 +1,59 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Projects List{% endblock %}
+
+{% block jquery_ready %}
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project List</h1>
+    <div id="projects">
+        <form action="{% url erp_projects_manage %}" method="POST">
+        {% csrf_token %}
+        {{ prj_mforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-top: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span3">Project Title / Preset</th>
+                    <th class="span1">Business Challenge</th>
+                    <th class="span1">Technical Requirements</th>
+                    <th class="span1">WorkGroup members</th>
+                    <th class="span1">Is pause</th>
+                    <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prj_form in prj_mforms %}
+                <tr{% if prj_form.instance.wg.count and prj_form.instance.requirements.count %}{% if prj_form.pause.value %} class="warning"{% endif %}{% else %} class="error"{% endif %}>
+                    <td class="ta_cm">{{ forloop.counter }}{{ prj_form.id }}</td>
+                    <td class="ta_lm"><a href="{% url erp_project prj_id=prj_form.instance.id %}">{{ prj_form.instance.title }}</a><br><span class="muted">Preset: {{ prj_form.instance.preset|default_if_none:"&mdash;" }}</span></td>
+                    <td class="ta_lm"><span class="muted">{{ prj_form.instance.challenge|truncatewords:"25" }}</span><br>
+                        <small><span class="badge badge-inverse">{{ prj_form.instance.date_start|default_if_none:"unknown" }}</span>&emsp;&mdash;&emsp;<span class="badge badge-inverse">{{ prj_form.instance.date_finish|default_if_none:"unknown" }}</span></small></td>
+                    <td class="ta_cm">{% if prj_form.instance.requirements.count %}<b class="text-success">{{ prj_form.instance.requirements.count }}</b>{% else %}<b class="text-error" title="Technical Requirements is empty!">0</b>{% endif %}</td>
+                    <td class="ta_cm">{% if prj_form.instance.wg.count %}<b class="text-success">{{ prj_form.instance.wg.count }}</b>{% else %}<b class="text-error" title="Work Group is empty!">0</b>{% endif %}</td>
+                    <td class="ta_cm">{{ prj_form.pause }}</td>
+                    <td class="ta_cm">{{ prj_form.DELETE }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <input type="hidden" name="form_prefix" value="{{ project.0 }}">
+        <input type="hidden" name="tab" value="{{ project.0 }}">
+        <div class="btn-group">
+            <a href="{% url erp_project_add %}" class="btn"><i class="icon-plus"></i> Add</a>
+            <button class="btn btn-primary"><i class="icon-hdd"></i> Save</button>
+        </div>
+        </form>
+    </div>
+{% endblock %}

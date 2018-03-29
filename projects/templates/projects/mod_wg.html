@@ -1,0 +1,134 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Manage Project Work Group{% endblock %}
+
+{% block jquery_ready %}
+    $("input[id ^= id_][id $= -date_start]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input[id ^= id_][id $= -date_finish]").datepicker({ "dateFormat": "yy-mm-dd" });
+    {% permission cv 18 %}
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= wg-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= wg-][name $= -DELETE]").removeAttr('checked');});
+    $('button[id ^= pos_]').click(function() {
+        $('form[id ^= pos_][id $= _list]').hide();
+        $('form#'+this.id+'_list').show();
+    }).first().click();
+    {% endpermission %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Edit Employees data who attach in Work Group of {{ project.title }}</h1>
+    <p class="muted"><small>{{ project.benefits }}</small></p>
+    <p>Project start date: <b><span class="badge badge-inverse">{{ project.date_start }}</span></b>;&emsp;Project finish date: <b><span class="badge badge-inverse">{{ project.date_finish }}</span></b>.</p>
+    <form action="{% url erp_project_mod_wg prj_id=project.id %}" method="POST">
+        {% csrf_token %}
+        {{ pwg_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+            <tr>
+                <th class="span1">#</th>
+                <th class="span2">Employee</th>
+                <th class="span6">Role/Description</th>
+                <th class="span2">Start Date/Finish Date</th>
+                {% permission cv 18 %}
+                <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" href="#" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" href="#" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                </th>
+                {% endpermission %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for pwg_form in pwg_iforms %}
+                <tr{% if pwg_form.errors %} class="error"{% else %}{% ifequal pwg_form.role.value "..." %} class="warning"{% endifequal %}{% endif %}>
+                    <td>{{ forloop.counter }}{{ pwg_form.id }}</td>
+                    <td>{{ pwg_form.instance.cv }}<br><small class="muted">({{ pwg_form.instance.cv.position }})</small></td>
+                    <td>{{ pwg_form.role }}{{ pwg_form.role.errors }}<br>
+                        {{ pwg_form.desc }}{{ pwg_form.desc.errors }}</td>
+                    <td>{{ pwg_form.date_start }}{{ pwg_form.date_start.errors }}<br>
+                        {{ pwg_form.date_finish }}{{ pwg_form.date_finish.errors }}
+                    </td>
+                    {% permission cv 18 %}<td>{{ pwg_form.DELETE }}</td>{% endpermission %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_project prj_id=project.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+    {% permission cv 18 %}
+    {% if project.requirements.count %}
+        <h1>Attach a new Employees to Work Group</h1>
+        <p><strong>Project Requirements:</strong></p>
+        <dl class="dl-horizontal">
+        {% for req, tags in req_tags_nums.items %}
+            <dt>{{ req.name }}</dt>
+            <dd>{% for tag, num in tags.items %}<span class="{% if num %}text-success{% else %}text-error{% endif %}">{{ tag }} ({{ num }})</span>{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
+        {% endfor %}
+        </dl>
+        <div id="positions_btns" class="btn-group" data-toggle="buttons-radio" style="margin-top: 1em;">
+        {% for pos in employees %}
+            <button id="pos_{{ pos.0.id }}" class="btn">{{ pos.0 }}</button>
+        {% endfor %}
+        </div>
+        {% for pos in employees %}
+            <form id="pos_{{ pos.0.id }}_list" action="{% url erp_project_mod_wg prj_id=project.id %}" method="POST">
+            {% csrf_token %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-top: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1" rowspan="2">#</th>
+                        <th class="span1" rowspan="2">Check</th>
+                        <th class="span2" rowspan="2">Employee</th>
+                        <th class="span5" rowspan="2">Skills</th>
+                        <th class="span3" colspan="3">Projects</th>
+                    </tr>
+                    <tr>
+                        <th class="span1">Prepare</th>
+                        <th class="span1">Work</th>
+                        <th class="span1">Pause</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for emp in pos.1 %}
+                    <tr{% if not emp.0.get_work_projects %} class="success"{% endif %}>
+                        <td>{{ forloop.counter }}</td>
+                        <td><input type="checkbox" name="{{ emp.0.id }}"></td>
+                        <td>{{ emp.0 }}</td>
+                        <td><dl class="dl-horizontal">
+                        {% for skill, present_tags in emp.1.items %}
+                            <dt>{{ skill }}</dt>
+                            <dd>{{ present_tags|join:", " }}</dd>
+                        {% endfor %}
+                        </dl></td>
+                        {% if is_manage %}
+                            <td><b class="{% if emp.0.get_prepare_projects %}text-warning{% else %}text-success{% endif %}">{{ emp.0.get_prepare_projects }}</b></td>
+                            <td><b class="{% if emp.0.get_work_projects %}text-warning{% else %}text-success{% endif %}">{{ emp.0.get_work_projects }}</b></td>
+                            <td><b class="{% if emp.0.get_pause_projects %}text-warning{% else %}text-success{% endif %}">{{ emp.0.get_pause_projects }}</b></td>
+                        {% else %}
+                            <td><span class="muted">&mdash;</span></td>
+                            <td><span class="muted">&mdash;</span></td>
+                            <td><span class="muted">&mdash;</span></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <input type="hidden" name="stage" value="add">
+            <button class="btn btn-primary" type="submit"><i class="icon-plus"></i> Add</button>
+        </form>
+        {% empty %}
+            <p class="alert alert-warning">The list of Employees which have same technical Skills as Project Requirements is empty.<br>
+            In present You haven`t possible to add one or more Employees to Project Work Group.</p>
+        {% endfor %}
+    {% else %}
+        <p class="alert alert-warning">The list of project technical requirements is empty. Add one or more Requirements to this project.</p>
+    {% endif %}
+    {% endpermission %}
+{% endblock %}

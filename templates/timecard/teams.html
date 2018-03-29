@@ -1,0 +1,68 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Команды{% endblock %}
+
+{% block teams %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+    <div id="tabs">
+        <ul>
+            {%for office in offices %}
+                <li><a href="#tabs-{{office.short_name}}">{{office.full_name}}</a></li>
+            {% endfor%}
+        </ul>
+
+        {% for office in offices %}
+
+            <div id="tabs-{{office.short_name}}">
+
+
+                <table width="100%" style="color:#000000" class="zebra">
+                    <col width=80>
+                    <col width=80>
+                    <col width=50>
+                    <col width=50>
+
+                    <tr>
+                        <td><strong>Имя</strong></td>
+                        <td><strong>Связаться</strong></td>
+                        <td><strong>Отдел</strong></td>
+                        <td><strong>Профессия</strong></td>
+                        <td><strong>На работе</strong></td>
+
+                    </tr>
+                    {% for user in users %}
+                        {% if office.short_name == user.office%}
+                            <tr>
+                                <td>{{user.name}}&nbsp;{{user.surname}}</td>
+                                <td>
+                                    {% if user.skype %}
+                                        <a href="skype:{{user.skype}}?chat" style="color:#000000"><img src="{{STATIC_URL}}css/images/skype.png" />&nbsp;{{user.skype}}</a>
+                                    {% else %}
+                                        <img src="{{STATIC_URL}}css/images/del15.png" />&nbsp;скайп неизвестен :(
+                                    {% endif %}
+                                    {% if user.email %}
+                                        <br/>
+                                        <a href="mailto:{{user.email}}" style="color:#000000"><img src="{{STATIC_URL}}css/images/edit.gif" />&nbsp;{{user.email}}</a>
+                                    {% endif %}
+
+                                </td>
+                                <td align="center">{% if user.dep %}{{ user.dep }}{% else %}<label style="color: darkred">dep N/A</label>{% endif %}</td>
+                                <td align="center">{% if user.profession %}{{ user.profession }}{% else %}<label style="color: darkred">spec N/A</label>{% endif %}</td>
+                                <td align="center">
+                                    {% for uid, st in status.items%}
+                                        {% if uid == user.id and st%}
+                                            <img src="{{STATIC_URL}}css/images/online.gif" />
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

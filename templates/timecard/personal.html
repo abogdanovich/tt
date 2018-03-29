@@ -1,0 +1,328 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Время{% endblock %}
+
+{% block personal %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+    {% if generated_report %}
+        <a href="/report_time/">Вернуться ко всем отчетам офиса</a>
+        <br/>
+        <br/>
+        Выбранный месяц: <b>{{ generated_report_month }}</b>
+        <br/>
+        <h3>Подробный отчет для: {{ reported_user }}</h3>
+        <br/><font color="red"><b>Отработано часов: {{ user_month_time }}</b></font><br/>
+        <br/>
+    {% endif %}
+
+
+    {% if time_correction_mode %}
+
+        <a href="/report_time/?user_report={{ time_correction_user }}&user_report_date={{ time_correction_date }}"
+                >Вернуться к отчету пользователя</a>
+
+
+
+        <br/>
+        <br/>
+        <h3>Раздел правки часов!</h3>
+        <br/>
+        <table width="100%" border="0" cellpadding="5" cellspacing="1" bgcolor="gray">
+            <tr bgcolor="white">
+                <td>Редактируемая дата</td>
+                <td><font color="red">{{ time_correction_date }}</font></td>
+            </tr>
+            <tr bgcolor="white">
+                <td>Сообщение пользователя</td>
+                <td>{{ time_correction_umess }}</td>
+
+            </tr>
+
+            <tr>
+                <td colspan="2" bgcolor="white" height="50px" style="padding: 5px;">
+
+                    {% if missed_hours_list %}
+                        {% for mhour in missed_hours_list %}
+                            <div style="
+                                        display: inline;
+                                        background-color: #CCFF99;
+                                        padding: 5px;
+                                        width: 40px;
+                                        height: 10px;
+                                        border: groove 1px gray;"
+
+                                 id="del_user_hour_{{ mhour.time_id }}"
+                                    >{{ mhour.time }}<img
+                                                        src="{{ STATIC_URL }}css/images/del15.png"
+                                                        style="
+                                                                position: relative;
+                                                                left: 9px;
+                                                                top: -9px;"
+
+                                                        onclick="Dajaxice.timecard.delete_record(
+                                                                        Dajax.process,
+                                                                        {'time_id': {{ mhour.time_id }},
+                                                                        'button_id': 'del_user_hour_{{ mhour.time_id }}' });"
+                                                        id="user_hour_image_{{ mhour.time_id }}"
+                                    ></div>
+                        {% endfor %}
+
+                    {% endif %}
+                    <div id="missed_time_area" style="display: inline;">
+                    </div>
+                </td>
+
+                <td bgcolor="white" align="center" width="20px">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input
+                                type="input"
+                                name="user_time"
+                                id="user_time"
+                                value="00:00"
+                                maxlength="5"
+                                size="5"
+                                style="
+                                    font-size: large;
+                                    border: none;
+                                    text-align: center;"
+                        >
+                        <br/>
+                        <input
+                                type="button"
+                                name="add_corrected_time"
+                                id="add_corrected_time"
+                                onclick="Dajaxice.timecard.add_corrected_time(
+                                                                Dajax.process,
+                                                                {'uid': '{{ time_correction_user }}',
+                                                                'date': '{{ time_correction_date }}',
+                                                                'time': user_time.value });"
+                                value="Добавить"
+                        />
+                    </form>
+                </td>
+            </tr>
+            {% if not disable_approve_button %}
+                <tr>
+                    <td
+                            colspan="2"
+                            align="center"
+                            bgcolor="white"
+                            >
+                        <br/>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input
+                                    type="button"
+                                    name="approve_corrected_time"
+                                    id="approve_corrected_time_{{ time_correction_record }}"
+                                    onclick="Dajaxice.timecard.approve_corrected_time(
+                                                Dajax.process,
+                                                {'record': {{ time_correction_record }},
+                                                'button_id': 'approve_corrected_time_{{ time_correction_record }}' });"
+                                    value="Завершить правку и оповестить пользователя!"
+                            />
+                            <h3><span id="msg_area_editor" style="color: gray"></span></h3>
+                        </form>
+                        <br/>
+                    </td>
+
+                </tr>
+            {% endif %}
+
+        </table>
+
+        <br/>
+    {% endif %}
+
+    <table
+            width="100%"
+            style="
+                    background-color:#F7F7F7;
+                    border: #cccccc 1px solid;
+                    font-family:Tahoma;
+                    color:#000000;"
+            cellpadding="2"
+            cellspacing="0"
+    >
+        <tr><td>
+            <div style="padding: 10px;">
+                <table
+                        width="100%"
+                        cellpadding="1"
+                        cellspacing="1"
+                        bgcolor="gray"
+                >
+                    {% for day in user_time %}
+                        {% for t in day %}
+                            {% if forloop.first %}
+
+                                {% if t.today %}
+                                    <tr bgcolor="#DAFFCC">
+                                        {% else %}
+
+                                        {% if t.dayoff %}
+                                            <tr bgcolor="#E5F0FF">
+                                                {% else %}
+                                            <tr bgcolor="#FFFFFF">
+                                        {% endif %}
+                                {% endif %}
+
+
+                                {% if time_correction_mode %}
+
+                                    {% if t.date == time_correction_date %}
+                                        <td
+                                            width="90px"
+                                            bgcolor="#FF7A7A"
+                                            align="center"
+                                            style="padding-left: 1px;"
+                                        >
+                                            <b>{{ t.weekday }}</b><br/>
+                                            корректировка <br/>{{ t.date }}
+                                            {% else %}
+                                        <td width="90px" style="padding-left: 1px;">
+                                        <b>{{ t.weekday }}</b><br/>
+                                        {{ t.date }}
+                                    {% endif %}
+                                <br/>
+                                <span style="color: red;">
+        {{ t.notice }}
+        </span>
+                                </td>
+
+                                {% else %}
+                                    {% if generated_report %}
+                                        <td width="90px" style="padding-left: 1px;">
+                                            <b>{{ t.weekday }}</b><br/>
+                                            <a
+                                                    href="#"
+                                                    value="{{ t.date }}"
+                                                    onclick="Dajaxice.timecard.show_boss_notice(
+                                                                Dajax.process, {'date': '{{ t.date }}' });"
+                                                    >
+
+                                                {{ t.date }}</a
+                                            > &nbsp;&nbsp;<a href="/report_time/?edit_u_hours=1&user={{ user.id }}&date={{ t.date }}"
+                                                ><img src="{{ STATIC_URL }}css/images/edit.gif"></a>
+
+                                            {% else %}
+                                        <td
+                                            width="90px"
+                                            style="padding-left: 1px;"
+                                        >
+                                        <b>{{ t.weekday }}</b><br/>
+                                        {{ t.date }}
+                                        <a
+                                            href="#correction"
+                                            value="{{ t.date }}"
+                                            onclick="Dajaxice.timecard.show_correct_dialog(
+                                                                Dajax.process, {'correct_date': '{{ t.date }}' });"
+                                        ><img src="{{ STATIC_URL }}css/images/repair.png" /></a>
+                                    {% endif %}
+                                <br/>
+                                <span style="color: red;">{{ t.notice }}</span>
+                                </td>
+                                {% endif %}
+                            {% else %}
+                                {% if t.sum %}
+                                    {% if t.time == "emp" %}
+                                        <td align="center" width="50px"><b>&nbsp</b></td>
+                                    {% else %}
+                                        <td align="center" bgcolor="#BFFF80"><b>{{ t.time }}</b></td>
+                                    {% endif %}
+
+                                {% else %}
+                                    {% if t.time == "emp" %}
+                                        <td align="center" width="50px">&nbsp</td>
+                                    {% else %}
+                                        <td align="center">{{ t.time }}</td>
+                                    {% endif %}
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+
+                </table>
+            </div>
+        </td></tr>
+    </table>
+
+    <br/>
+    <br/>
+    <h3><span id="msg_area" style="color: gray"></span></h3>
+    <div id="dialog_correct_my_hours" style="display: none;">
+
+        <form method="post">
+            {% csrf_token %}
+            <br/>
+            <h3
+                id="correction_txt_label"
+                style="display: inline;"
+            >Дата корректировки:</h3
+            ><h3 style="display: inline;"
+            ><span id="correct_user_date"></span
+            ></h3>
+            <input
+                    type='hidden'
+                    name='uid'
+                    value='{{ user.id }}'
+            />
+            <input
+                    type='hidden'
+                    name='correct_user_date_input'
+                    id='correct_user_date_input'
+                    value=''
+            />
+            <br/>
+            <br/>
+            <textarea
+                    id="correct_time"
+                    name="correct_time"
+                    cols="40"
+                    rows="7"
+            >
+                Я, {{ user.name }} {{ user.surname }}, {% if user.gender == "M" %}забыл {% else %}забыла {% endif %}внести свои часы по следующей причине:
+                ...
+                Прошу изменить моё время на:
+                ...
+            </textarea><br/>
+            <br/>
+            <input
+                    type="button"
+                    name="sendrequestbuttom"
+                    id="sendrequestbuttom"
+                    onclick="Dajaxice.timecard.send_time_correction(
+                                    Dajax.process,
+                                    {   'dt': correct_user_date_input.value,
+                                        'uid': uid.value,
+                                        'msg': correct_time.value
+                                    }
+                            );"
+                    value="Отправить"
+            />
+            <input
+                    type="button"
+                    name="save_boss_notice"
+                    style="display: none;"
+                    id="save_boss_notice"
+                    onclick="Dajaxice.timecard.save_boss_notice(
+                                Dajax.process,
+                                {
+                                    'user': uid.value,
+                                    'date': correct_user_date_input.value,
+                                    'notice': correct_time.value
+                                }
+                            );"
+                    value="Сохранить заметку"
+            />
+        </form>
+    </div>
+    <span id="correction" />
+{% endblock %}

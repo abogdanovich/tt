@@ -1,0 +1,10 @@
+# Here we set the default behavior for all text files in repo
+* text=auto
+
+# Declare text files we want to always be normalized and converted to LF on checkout
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.py text eol=lf
+
+settings.py merge=ours

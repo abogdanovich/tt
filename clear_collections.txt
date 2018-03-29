@@ -1,0 +1,62 @@
+db.project_appended_employee.remove({});
+db.project_appended_employee_role.remove({});
+db.project_appended_files.remove({});
+
+
+
+
+db.project_appended_employee.find({});
+db.project_appended_employee_role.find({});
+db.project_appended_files.find({});
+
+
+
+db.project_appended_employee.find({projectId: ObjectId("53f5fd2b92e60411d40bc69a")}).count();
+db.project_appended_employee_role.find({projectId: ObjectId("53f5fd2b92e60411d40bc69a")}).count();
+db.project_appended_files.find({projectId: ObjectId("53f5fd2b92e60411d40bc69a")}).count();
+
+
+
+db.project_appended_employee.find({projectId: ObjectId("53f7634b92e60405dc50bc7f")});
+db.project_appended_employee_role.find({projectId: ObjectId("53f7634b92e60405dc50bc7f")});
+db.project_appended_files.find({projectId: ObjectId("53f7634b92e60405dc50bc7f")});
+
+
+db.project_appended_employee.find({projectId: {$ne: ObjectId("53f6032b92e6040eec3fbb95")}});
+db.project_appended_employee_role.find({projectId: {$ne: ObjectId("53f6032b92e6040eec3fbb95")}});
+db.project_appended_files.find({projectId: {$ne: ObjectId("53f6032b92e6040eec3fbb95")}});
+
+
+
+db.project_appended_employee.find({projectId: {$ne: ObjectId("53f5fd2b92e60411d40bc69a")}}).count();
+db.project_appended_employee_role.find({projectId: {$ne: ObjectId("53f5fd2b92e60411d40bc69a")}}).count();
+db.project_appended_files.find({projectId: {$ne: ObjectId("53f5fd2b92e60411d40bc69a")}}).count();
+
+
+
+
+
+db.project_appended_employee.find({projectId: { $exists: false }});
+db.project_appended_employee_role.find({projectId: { $exists: false }});
+db.project_appended_files.find({projectId: { $exists: false }});
+
+
+
+db.timecard_user.find({}).sort({ name: 1, surname: 1} )
+
+ 
+db.timecard_user.update({}, {$set: {"can_edit_language_skill" : 1 }}, false, true);
+db.timecard_user.update({}, {$set: {"can_edit_skill" : 1 }}, false, true);
+
+
+db.timecard_users_skills.update({}, {$set: {"description" : '' }}, false, true);
+
+
+
+
+
+
+
+
+
+

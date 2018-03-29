@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        $(function() {
+            {% block jquery_ready %}{% endblock %}
+        });
+    </script>
+    <style>
+        .errorlist
+            {   background-color: #ff7d4d ;
+            }
+    </style>
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

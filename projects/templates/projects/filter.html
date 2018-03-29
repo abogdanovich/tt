@@ -1,0 +1,128 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Projects List{% endblock %}
+
+{% block jquery_ready %}
+    $("input[id ^= id_][id $= _date_start]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input[id ^= id_][id $= _date_finish]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $('button[id ^= projects_]').click(function() {
+        $('div[id ^= projects_][id $= _list]').hide();
+        $('div#'+this.id+'_list').show();
+    });
+    {% if tab %}
+        $('button#projects_{{ tab }}').click();
+    {% else %}
+        $('button[id ^= projects_]').first().click();
+    {% endif %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project List by Filter</h1>
+    <p class="muted">In present it`s available only three filters:</p>
+    <ul class="muted">
+        <li><b>Filter by Project Data</b> - given list of projects filtered by some project fields;</li>
+        <li><b>Filter by Presets</b> - given list of projects filtered by preset name;</li>
+        <li><b>Filter by Technical Requirements</b> - given list of projects filtered by values from technical requirements data.</li>
+    </ul>
+    <div id="projects_btns" class="btn-group" data-toggle="buttons-radio">
+        <button id="projects_data" class="btn">By Project Data</button>
+        <button id="projects_presets" class="btn">By Presets</button>
+        <button id="projects_reqs" class="btn">By Technical Requirements</button>
+    </div>
+    <div id=projects>
+        <div id="projects_data_list">
+            <h2>Filter by Project Data</h2>
+            <p class="muted">Please, type one or more criteria for search.<br>
+            If field is <u>empty</u>, it means as any value.</p>
+            <form action="{% url erp_projects_filter_data %}" method="POST">
+                {% csrf_token %}
+                <dl class="dl-horizontal">
+                    {# title #}
+                    <dt>{{ project_data_form.title.label_tag }}</dt>
+                    <dd>{{ project_data_form.title }}</dd>
+                    {# service #}
+                    <dt>{{ project_data_form.service.label_tag }}</dt>
+                    <dd>{{ project_data_form.service }}</dd>
+                    {# industry #}
+                    <dt>{{ project_data_form.industry.label_tag }}</dt>
+                    <dd>{{ project_data_form.industry }}</dd>
+                    {# date start #}
+                    <dt>{{ project_data_form.date_start.label_tag }}</dt>
+                    <dd>{{ project_data_form.date_start }}</dd>
+                    {# date finish #}
+                    <dt>{{ project_data_form.date_finish.label_tag }}</dt>
+                    <dd>{{ project_data_form.date_finish }}</dd>
+                </dl>
+                <button type="submit" class="btn btn-primary"><i class="icon-search"></i> Search</button>
+            </form>
+            {% if results_data_flag %}
+                {% if results_data %}
+                <h2>Results of search:</h2>
+                <ol>
+                {% for rec in results_data %}
+                    <li><strong><a href="{% url erp_project prj_id=rec.id %}">{{ rec.title }}</a></strong>&emsp;&mdash;&emsp;<span class="muted">{{ rec.challenge|truncatewords:25 }} ({{ rec.date_start|default_if_none:"unknown" }}&emsp;&mdash;&emsp;{{ rec.date_finish|default_if_none:"unknown" }}).</span></li>
+                {% endfor %}
+                </ol>
+                {% else %}
+                    <p class="alert alert-block alert-warning">Not found any projects with require criteria. Try again.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div id="projects_presets_list">
+            <h2>Filter by Presets</h2>
+            <p class="muted">Please, check one option from below list of presets.</p>
+            <form action="{% url erp_projects_filter_presets %}" method="POST">
+            {% csrf_token %}
+                <label for="preset_0" class="radio"><input type="radio" name="preset" value="0" id="preset_0" class="radio"{% ifequal presets_value 0 %} checked="checked"{% endifequal %}>&nbsp;Without preset.</label>
+            {% for preset in presets %}
+                <label for="preset_{{ preset.id }}" class="radio"><input type="radio" name="preset" value="{{ preset.id }}" id="preset_{{ preset.id }}" class="radio"{% ifequal presets_value preset.id %} checked="checked"{% endifequal %}>&nbsp;{{ preset.title }}.</label>
+            {% endfor %}
+                <input type="hidden" name="tab" value="presets">
+                <button type="submit" class="btn btn-primary"><i class="icon-search"></i> Search</button>
+            </form>
+            {% if results_presets_flag %}
+                {% if results_data %}
+                <h2>Results of search:</h2>
+                <ol>
+                {% for rec in results_data %}
+                    <li><strong><a href="{% url erp_project prj_id=rec.id %}">{{ rec.title }}</a></strong>&emsp;&mdash;&emsp;<span class="muted">{{ rec.challenge|truncatewords:25 }} ({{ rec.date_start|default_if_none:"unknown" }}&emsp;&mdash;&emsp;{{ rec.date_finish|default_if_none:"unknown" }}).</span></li>
+                {% endfor %}
+                </ol>
+                {% else %}
+                    <p class="alert alert-block alert-warning">Not found any projects with require preset. Try again.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div id="projects_reqs_list">
+            <h2>Filter by Technical Requirements</h2>
+            <p class="muted">Please, type one or more requirement criteria for search.<br>
+            If field is <u>empty</u>, it means as any value.</p>
+            <form action="{% url erp_projects_filter_reqs %}" method="POST">
+                {% csrf_token %}
+                {{ project_reqs_forms.management_form }}
+                <dl class="dl-horizontal">
+                    {% for req_form in project_reqs_forms %}
+                    <dt><label for="id_{{ req_form.prefix }}-query">{{ req_form.instance.name }}</label></dt>
+                    <dd>{{ req_form.id }}{{ req_form.query }}</dd>
+                    {% endfor %}
+                </dl>
+                <input type="hidden" name="tab" value="reqs">
+                <button type="submit" class="btn btn-primary"><i class="icon-search"></i> Search</button>
+            </form>
+            {% if results_reqs_flag %}
+                {% if results_data %}
+                <h2>Results of search:</h2>
+                <ol>
+                {% for rec in results_data %}
+                    <li><strong><a href="{% url erp_project prj_id=rec.id %}">{{ rec.title }}</a></strong>&emsp;&mdash;&emsp;<span class="muted">{{ rec.challenge|truncatewords:25 }} ({{ rec.date_start|default_if_none:"unknown" }}&emsp;&mdash;&emsp;{{ rec.date_finish|default_if_none:"unknown" }}).</span></li>
+                {% endfor %}
+                </ol>
+                {% else %}
+                    <p class="alert alert-block alert-warning">Not found any projects with require criteria. Try again.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

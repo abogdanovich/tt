@@ -1,0 +1,34 @@
+{% extends "customers/base.html" %}
+
+{% block page_title %}{{ block.super }} - Main Page{% endblock %}
+
+{% block base_content %}
+    <h1>{% ifequal op 'add' %}Add a New Customer{% endifequal %}{% ifequal op 'mod' %}Edit data of the Current Customer{% endifequal %}{% ifequal op 'del' %}Delete data of the Current Customer{% endifequal %}</h1>
+    <form action="{% ifequal op 'add' %}{% url erp_customer_add %}{% endifequal %}{% ifequal op 'mod' %}{% url erp_customer_mod c_id=c_mform.instance.id %}{% endifequal %}" method="POST">
+    {% csrf_token %}
+        <table>
+            <tr>
+                <td>
+                    <dl class="dl-horizontal">
+                        <dt class="control-group{% if c_mform.name.errors %} error{% endif %}">{{ c_mform.name.label_tag }}</dt><dd  class="control-group{% if c_mform.name.errors %} error{% endif %}">{{ c_mform.name }}{{ c_mform.name.errors }}</dd>
+                        <dt>{{ c_mform.country.label_tag }}</dt><dd>{{ c_mform.country }}{{ c_mform.country.errors }}</dd>
+                        <dt>{{ c_mform.address.label_tag }}</dt><dd>{{ c_mform.address }}{{ c_mform.address.errors }}</dd>
+                    </dl>
+                </td>
+                <td>
+                    <dl class="dl-horizontal">
+                        <dt>{{ c_mform.contact.label_tag }}</dt><dd>{{ c_mform.contact }}{{ c_mform.contact.errors }}</dd>
+                        <dt>{{ c_mform.phone.label_tag }}</dt><dd>{{ c_mform.phone }}{{ c_mform.phone.errors }}</dd>
+                        <dt>{{ c_mform.email.label_tag }}</dt><dd>{{ c_mform.email }}{{ c_mform.emain.errors }}</dd>
+                        <dt>{{ c_mform.desc.label_tag }}</dt><dd>{{ c_mform.desc }}{{ c_mform.desc.errors }}</dd>
+                    </dl>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            {% ifnotequal op 'add' %}<a href="{% url erp_customers %}" class="btn"><i class="icon-backward"></i> Back</a>{% endifnotequal %}
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

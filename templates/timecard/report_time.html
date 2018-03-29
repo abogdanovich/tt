@@ -1,0 +1,125 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Отчеты сотрудников офиса по времени{% endblock %}
+
+
+{% block personal %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+<h2>Отчет офиса</h2>
+
+
+<b>отчетный месяц: {{ reported_month }}</b>
+<br/><br/><br/>
+выбрать год (последние 5 лет):
+{% for yr in year_range %}
+    {% if yr == sel_year %}
+        <a href="/report_time/?selected_year={{ yr }}" style="color: red">{{ yr }}</a>
+    {% else %}
+        <a href="/report_time/?selected_year={{ yr }}">{{ yr }}</a>
+    {% endif %}{% endfor %}
+<br/>
+выбрать месяц:
+{% if sel_month == 1 %}
+<a href="/report_time/?selected_month=1&year={{ sel_year }}" style="color: red;">Январь</a>
+{% else %}
+<a href="/report_time/?selected_month=1&year={{ sel_year }}">Январь</a>
+{% endif %}
+    
+    
+{% if sel_month == 2 %}
+<a href="/report_time/?selected_month=2&year={{ sel_year }}" style="color: red;">Февраль</a>
+{% else %}
+<a href="/report_time/?selected_month=2&year={{ sel_year }}">Февраль</a>
+{% endif %}
+
+
+{% if sel_month == 3 %}
+    <a href="/report_time/?selected_month=3&year={{ sel_year }}" style="color: red;">Март</a>
+{% else %}
+    <a href="/report_time/?selected_month=3&year={{ sel_year }}">Март</a>
+{% endif %}
+
+
+{% if sel_month == 4 %}
+    <a href="/report_time/?selected_month=4&year={{ sel_year }}" style="color: red;">Апрель</a>
+{% else %}
+    <a href="/report_time/?selected_month=4&year={{ sel_year }}">Апрель</a>
+{% endif %}
+
+
+{% if sel_month == 5 %}
+    <a href="/report_time/?selected_month=5&year={{ sel_year }}" style="color: red;">Май</a>
+{% else %}
+    <a href="/report_time/?selected_month=5&year={{ sel_year }}">Май</a>
+{% endif %}
+
+
+{% if sel_month == 6 %}
+    <a href="/report_time/?selected_month=6&year={{ sel_year }}" style="color: red;">Июнь</a>
+{% else %}
+    <a href="/report_time/?selected_month=6&year={{ sel_year }}">Июнь</a>
+{% endif %}
+
+{% if sel_month == 7 %}
+    <a href="/report_time/?selected_month=7&year={{ sel_year }}" style="color: red;">Июль</a>
+{% else %}
+    <a href="/report_time/?selected_month=7&year={{ sel_year }}">Июль</a>
+{% endif %}
+
+
+{% if sel_month == 8 %}
+    <a href="/report_time/?selected_month=8&year={{ sel_year }}" style="color: red;">Август</a>
+{% else %}
+    <a href="/report_time/?selected_month=8&year={{ sel_year }}">Август</a>
+{% endif %}
+
+
+{% if sel_month == 9 %}
+    <a href="/report_time/?selected_month=9&year={{ sel_year }}" style="color: red;">Сентябрь</a>
+{% else %}
+    <a href="/report_time/?selected_month=9&year={{ sel_year }}">Сентябрь</a>
+{% endif %}
+
+
+{% if sel_month == 10 %}
+    <a href="/report_time/?selected_month=10&year={{ sel_year }}" style="color: red;">Октябрь</a>
+{% else %}
+    <a href="/report_time/?selected_month=10&year={{ sel_year }}">Октябрь</a>
+{% endif %}
+
+
+{% if sel_month == 11 %}
+    <a href="/report_time/?selected_month=11&year={{ sel_year }}" style="color: red;">Ноябрь</a>
+{% else %}
+    <a href="/report_time/?selected_month=11&year={{ sel_year }}">Ноябрь</a>
+{% endif %}
+
+
+{% if sel_month == 12 %}
+    <a href="/report_time/?selected_month=12&year={{ sel_year }}" style="color: red;">Декабрь</a>
+{% else %}
+    <a href="/report_time/?selected_month=12&year={{ sel_year }}">Декабрь</a>
+{% endif %}
+
+<br/>
+<br/>
+
+<table width="400" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+<tr>
+<td style="padding: 10px;"><h3>Сотрудник</h3></td>
+<td style="padding: 10px;"><h3>Время</h3></td>
+<td style="padding: 10px;"><h3>Подробно</h3></td>
+</tr>
+   
+    {% for m in users %}
+	<tr>
+	    <td style="padding: 3px; font-size: 15px;">{{ m.name }} {{ m.surname }}</td><td style="padding: 3px; font-size: 15px;">{{ m.utime }}</td><td style="font-size: 15px;"><a href="/report_time/?user_report={{ m.userid }}&user_report_date={{ reported_month }}">подробно</a></td>
+	</tr>
+    {% endfor %}
+
+</table>
+
+
+{% endblock %}

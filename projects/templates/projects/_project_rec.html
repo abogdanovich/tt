@@ -1,0 +1,19 @@
+{% load erp_tags %}
+<tr{% if project_form.instance.wg.count and project_form.instance.requirements.count %}{% if project_form.pause.value %} class="warning"{% endif %}{% else %} class="error"{% endif %}>
+    <td>{{ forloop.counter }}{{ project_form.id }}</td>
+    <td><a href="{% url erp_project prj_id=project_form.instance.id %}">{{ project_form.instance.title }}</a><br><span class="muted">Preset: {{ project_form.instance.preset|default_if_none:"&mdash;" }}</span></td>
+    <td>{{ project_form.instance.dev_time }}/{% to_days project_form.instance.dev_time %}</td>
+    <td>{{ project_form.instance.date_start|default_if_none:"&mdash;" }}<br>
+        {{ project_form.instance.date_finish|default_if_none:"&mdash;" }}</td>
+    <td>{{ project_form.instance.service }}<br>
+        {{ project_form.instance.industry }}
+    </td>
+    <td>{% if project_form.instance.requirements.count %}<b class="text-success">{{ project_form.instance.requirements.count }}</b>{% else %}<b class="text-error" title="Technical Requirements is empty!">0</b>{% endif %}</td>
+    <td>{% if project_form.instance.wg.count %}<b class="text-success">{{ project_form.instance.wg.count }}</b>{% else %}<b class="text-error" title="Work Group is empty!">0</b>{% endif %}</td>
+    {% if is_manage %}
+        <td>{{ project_form.pause }}</td>
+        <td>{{ project_form.DELETE }}</td>
+        {% else %}
+            <td>{% if project_form.pause.value %}<span class="badge badge-warning">Pause</span>{% else %}&mdash;{% endif %}</td>
+    {% endif %}
+</tr>

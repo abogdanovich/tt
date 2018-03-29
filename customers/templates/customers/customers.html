@@ -1,0 +1,43 @@
+{% extends "customers/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Customer List{% endblock %}
+
+{% block base_content %}
+    <h1>Project Customers List</h1>
+    {% for customer in customers %}
+    {% if forloop.first %}
+    <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th class="name">Customer</th>
+                <th class="">Contact Person</th>
+                <th>Phone</th>
+                <th>E-Mail</th>
+            </tr>
+            </thead>
+        <tbody>
+    {% endif %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{% permission cv 3 %}
+                    <a href="{% url erp_customer_mod c_id=customer.id %}">{{ customer.name }}</a>
+                    {% not_permission %}
+                    {{ customer.name }}
+                    {% endpermission %}
+                </td>
+                <td>{{ customer.contact }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.email }}</td>
+            </tr>
+    {% if forloop.last %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% empty %}
+    <p>The Customer List is empty yet. Please, add a one or more customers data.</p>
+    {% endfor %}
+    <a href="{% url erp_customer_add %}" class="btn btn-primary"><i class="icon-plus"></i> Add</a>
+{% endblock %}

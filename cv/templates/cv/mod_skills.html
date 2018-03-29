@@ -1,0 +1,39 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit TE Skills{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Technical Expertise skills of {{ cv_skill_iforms.instance.name }} {{ cv_skill_iforms.instance.surname }}</h1>
+
+    <form action="{% url erp_cv_mod_skills cv_id=cv_skill_iforms.instance.id %}" method="POST">
+        {% csrf_token %}
+        {{ cv_skill_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            {% for cv_skill_form in cv_skill_iforms %}
+                {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">{{ cv_skill_form.skill.label }}</th>
+                        <th class="span8">{{ cv_skill_form.desc.label }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                {% endif %}
+            <tr class="control-group{% if cv_skill_form.errors %} error{% endif %}">
+                <td>{{ forloop.counter }}{{ cv_skill_form.id }}<input type="hidden" name="cv_skills-0-cv" id="id_cv_skills-0-cv" value="{{ cv_skill_iforms.instance.id }}"></td>
+                <td>{{ cv_skill_form.get_skill_name }}{% if cv_skill_form.instance.skill.desc %}<br><small class="muted">{{ cv_skill_form.instance.skill.desc }}</small>{% endif %}</td>
+                <td>{{ cv_skill_form.desc }}{{ cv_skill_form.desc.errors }}</td>
+            </tr>
+            {% if forloop.last %}
+                </tbody>
+            {% endif %}
+            {% endfor %}
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=cv_skill_iforms.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

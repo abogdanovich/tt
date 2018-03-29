@@ -1,0 +1,63 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Preset View{% endblock %}
+
+{% block jquery_ready %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project Preset View&emsp;
+        <div class="btn-group">
+            <a class="btn" href="{% url erp_project_preset_print pst_id=preset.id %}" target="_blank"><i class="icon-print"></i> Prewiew & Print</a>
+            {% permission cv 13 %}<a href="{% url erp_project_add_preset pst_id=preset.id %}" class="btn btn-success" title="create new project from this preset"><i class="icon-plus"></i> Create Project</a>{% endpermission %}
+        </div>
+    </h1>
+    <div style="margin-top: 1em;">
+        <h2>Project Preset Data
+            {% permission cv 26 %}&emsp;<a href="{% url erp_project_preset_mod pst_id=preset.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}
+        </h2>
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <tr><td class="span4">Title</td><td>{{ preset.title }}</td></tr>
+            <tr><td>Business Challenge</td><td>{{ preset.challenge }}</td></tr>
+            <tr><td>Service</td><td>{{ preset.service }}</td></tr>
+            <tr><td>Industry</td><td>{{ preset.industry }}</td></tr>
+            <tr><td>Solution</td><td>{{ preset.solution }}</td></tr>
+        </table>
+        <h2>Preset Technical Requirements
+            {% permission cv 26 %}
+            &emsp;<span class="btn-group">
+            <a href="{% url erp_project_preset_add_req pst_id=preset.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+            {% if reqs %}<a href="{% url erp_project_preset_mod_req pst_id=preset.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endif %}</span>
+            {% endpermission %}
+        </h2>
+        <p class="muted"><small>For add requirements to this list or delete theirs from here click "Add" button.<br>
+        For edit description text of project requirements click "Edit" button.</small></p>
+        {% if reqs %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Skill</th>
+                        <th class="span8">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in reqs %}
+                    <tr{% if not req.desc %} class="warning" title="empty requirement"{% endif %}>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ req.skill }}</td>
+                        <td>{% if req.desc %}{{ req.desc }}{% else %}&mdash;{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">The list of project preset technical requirements is empty. Add one or more Requirements to this project.</p>
+        {% endif %}
+        <p>
+            <a href="{% url erp_project_presets %}" class="btn"><i class="icon-backward"></i> Back</a>
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% if current_voting %}
+    <div class="widget">
+        <table width="220" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr>
+                <td><div style="padding: 10px;">
+                    <div id = "votings_div">
+                        <table width="100%" align="center">
+                            <!--<tr  bgcolor="#CCFFCC"><img src="{{ STATIC_URL }}/css/images/voting.png"></tr>-->
+                            <tr>
+                                <h4>{{current_voting.question}}</h4>
+                            </tr>
+                            <tr>
+                                <br/>
+                            </tr>
+                            <tr>
+                                <td>{{current_voting.votes_yes_desc}}</td>
+                                <td id ="yes_vote"> {%if not voted%}
+                                    <input type="button" value="vote!" onClick="Dajaxice.timecard.vote(Dajax.process, {'vote_id': {{current_voting.id}} , 'opinion': 'yes', 'uid':{{uid}}});">
+                                {% else %}
+                                    {{current_voting.votes_yes}}
+                                {% endif %} </td>
+                            <tr/>
+                            <tr>
+                                <td>{{current_voting.votes_no_desc}}</td>
+                                <td id ="no_vote"> {% if not voted %}
+                                    <input type="button" value="vote!" onClick="Dajaxice.timecard.vote(Dajax.process, {'vote_id': {{current_voting.id}} , 'opinion': 'no', 'uid':{{uid}}});">
+                                {% else %}
+                                    {{current_voting.votes_no}}
+                                {% endif %} </td>
+                            <tr/>
+                            <tr>
+                                <td>{{current_voting.votes_dontcare_desc}}</td>
+                                <td id ="dontcare_vote"> {% if not voted %}
+                                    <input type="button" value="vote!" onClick="Dajaxice.timecard.vote(Dajax.process, {'vote_id': {{current_voting.id}} , 'opinion': 'dontcare', 'uid':{{uid}}});">
+                                {% else %}
+                                    {{current_voting.votes_dontcare}}
+                                {% endif %} </td>
+                            <tr/>
+                        </table>
+                    </div>
+                </div></td>
+            </tr>
+        </table>
+    </div>
+{% endif %}

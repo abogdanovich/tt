@@ -1,0 +1,84 @@
+{% extends "erp/base_print.html" %}
+
+{% block page_title %}{{ block.super }} - Project Preview & Print{% endblock %}
+
+{% block content %}
+    <h1>Project: {{ project.title }}</h1>
+    <small>Date of generation: {% now "jS F Y, H:i" %}</small>
+    <hr>
+    {% if is_manage %}
+        <h2>Customer Data</h2>
+        <table class="rows">
+            <tr><td class="span3">Customer</td><td class="span9">{{ project.customer }}</td></tr>
+            <tr><td>Benefits for Customer</td><td>{{ project.benefits }}</td></tr>
+            <tr><td>Customer's feedback</td><td>{{ project.feedback }}</td></tr>
+        </table>
+    {% endif %}
+    <h2>Project Data</h2>
+    <table class="rows">
+        <tr><td class="span3">Business Challenge</td><td class="span9">{{ project.challenge }}</td></tr>
+        <tr><td>Service</td><td>{{ project.service }}</td></tr>
+        <tr><td>Industry</td><td>{{ project.industry }}</td></tr>
+        <tr><td>Total Time for Development</td><td>{{ project.dev_time }}</td></tr>
+        <tr><td>Time interval</td><td>{{ project.date_start|default_if_none:"unknown" }}&emsp;&mdash;&emsp;{{ project.date_finish|default_if_none:"unknown" }}</td></tr>
+        {% comment %}<tr><td>Is Pause</td><td>{{ project.is_pause }}</td></tr>{% endcomment %}
+    </table>
+    <h2>Technical Requirements</h2>
+    {% if reqs %}
+        <table class="rows">
+            <thead>
+                <tr>
+                    <th class="span1 ta_cm">#</th>
+                    <th class="span3 ta_cm">Skill</th>
+                    <th class="span8 ta_cm">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for req in reqs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ req.skill }}</td>
+                    <td>{{ req.desc|default_if_none:"&mdash;" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>The list of project technical requirements is empty.</p>
+    {% endif %}
+    <h2>Work Group</h2>
+    {% if wg %}
+        <table class="rows">
+            <thead>
+            <tr>
+                <th class="span1 ta_cm">#</th>
+                <th class="span3 ta_cm">Employee</th>
+                <th class="span6 ta_cm">Role/Description</th>
+                <th class="span2 ta_cm">Time interval</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for emp in wg %}
+                <tr>
+                    <td class="ta_cm">{{ forloop.counter }}</td>
+                    <td class="ta_lm">{{ emp.cv }}<br><small>({{ emp.cv.position }})</small></td>
+                    <td class="ta_lm"><strong>{{ emp.role }}</strong><br><small>{{ emp.desc }}</small></td>
+                    <td class="ta_cm">{{ emp.date_start|default_if_none:"unknown" }}<br>&mdash;<br>{{ emp.date_finish|default_if_none:"unknown" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>The list of employees for current project is empty.</p>
+    {% endif %}
+    <h2>Screenshots</h2>
+    {% if sss %}
+    <div class="colsblock">
+        {% for ss in sss %}
+        <div class="cols c2"><img src="{{ ss.image.url }}" width="100%"><br><small>{{ ss.desc }}</small></div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>The screenshot list is empty.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Delete{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Curriculum Vitae(s)</h1>
+    <p class="alert alert-blosk"><span class="text-warning"><strong>WARNING!!!</strong> Do you want really delete this CVs?<br>
+    This CVs will be deleted from project workgroups.<br>
+    Also will be delete ALL CV data (personal data, contact info, foreign languages & technical expertise skills).</span></p>
+    <ul>
+        {% for cv in cvs_del %}
+            <li><strong>{{ cv }}</strong><small class="muted"> ({{ cv.position }}{% if cv.fired %} - fired{% endif %})</small>.</li>
+        {% endfor %}
+    </ul>
+    <form action="{% url erp_cvs_manage %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_cvs_manage %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

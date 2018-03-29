@@ -1,0 +1,16 @@
+{% extends "erp/base_print.html" %}
+
+{% block page_title %}{{ block.super }} - Certificate Preview & Print{% endblock %}
+
+{% block content %}
+    <h1>Curriculum Vitae: {{ view_cv }}</h1>
+    <small>Date of generation: {% now "jS F Y, H:i" %}</small>
+    <hr>
+    <h2>Certificate Info</h2>
+    <table class="rows">
+        <tr><td class="span3 ta_lm">Title</td><td class="span9 ta_lm">{{ certificate.title }}</td></tr>
+        <tr><td class="span3 ta_lm">Description</td><td class="span9 ta_lm">{{ certificate.desc }}</td></tr>
+        <tr><td class="ta_lm">Date</td><td class="ta_lm">{{ certificate.date|default_if_none:"unknown" }}</td></tr>
+        {% if certificate.image %}<tr><td class="span3 ta_lm">Image</td><td class="span9 ta_tl"><img src="{{ certificate.image.url }}" width="100%"></td></tr>{% endif %}
+    </table>
+{% endblock %}

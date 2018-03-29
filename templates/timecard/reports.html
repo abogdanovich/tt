@@ -1,0 +1,59 @@
+{% extends "timecard/index.html" %}
+{% block page_title %} Отчеты сотрудников {% endblock %}
+
+{% block reports %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+
+    <input type='hidden' id='rid' />
+
+    <div style="padding:10px; font-size:medium; font-family:'Times New Roman', Times, serif; display: none;"  id="msg_area"></div>
+    <div id="div_update_lead_feedback" style="padding:10px; display: none;">
+        <table>
+            <tr>
+                <td><form method="post">{% csrf_token %}<textarea id="update_lead_feedback" name="update_lead_feedback" cols="70" rows="3" ></textarea></form></td>
+                <td style="padding:10px;"><input type="button" value="UPDATE" onclick="Dajaxice.timecard.update_lead_feedback(Dajax.process,{'rid':rid.value,'feedback':update_lead_feedback.value,'uid':{{user.id}}});" /></td>
+            </tr>
+        </table>
+    </div>
+    {% for p_w_r,opened in reports_dict.items %}
+        <div id="table" style="max-height: 800px; overflow:auto">
+            <h3 style="padding:10px;">{{p_w_r}} {% if not opened %}(PROJECT CLOSED){% endif %}</h3>
+                {% if opened == 1 %}
+                    <table id="report_table" width="100%" style="border:1px solid; font-family:Tahoma; color:#000000; padding:10px" cellpadding="2" cellspacing="0" class="zebra" >
+                {% else %}
+                    <table id="report_table" width="100%" style="border:1px solid; font-family:Tahoma; color:#000000; padding:10px" cellpadding="2" cellspacing="0" class="zebrared" >
+                {% endif %}
+                <col width="90"/>
+                <col width="90"/>
+                <col width="130"/>
+                <col width="120"/>
+                <col width="90"/>
+                <col width="190"/>
+                <tr>
+                    <td><strong>Отчетная неделя/год</strong></td>
+                    <td><strong>Отчитался</strong></td>
+                    <td><strong>Сотрудник</strong></td>
+                    <td><strong>Отчет и отзыв</strong></td>
+                    <td><strong>Часы</strong></td>
+                    <td><strong>Отзыв руководителя</strong></td>
+                </tr>
+                {% for report in reports%}
+
+                    {% if p_w_r == report.project_name %}
+                        <tr id="report_line_{{report.id}}">
+                            <td >{{report.week}}/{{report.year}}</td>
+                            <td >{{report.reporting_date}}</td>
+                            <td >{{report.user_surname}} {{report.user_name}}</td>
+                            <td ><input type="button" onclick="Dajaxice.timecard.show_report(Dajax.process,{'rid':{{report.id}},'old_rid':rid.value});" value="Click to view"/></td>
+                            <td>{{report.hours}} {% if report.overtimed%}<div style="color:#FF0000; font-style:italic">OvTm {{report.overtimed}}/{{work_hours}}</div>{%endif%}</td>
+                            <td id="leadfeedback_{{report.id}}">{{report.lead_feedback}}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% endblock %}

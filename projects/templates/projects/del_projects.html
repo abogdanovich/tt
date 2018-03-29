@@ -1,0 +1,22 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - Delete Projects{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Projects</h1>
+    <p class="alert alert-blosk"><span class="text-warning"><strong>WARNING!!!</strong> Do you want really delete this project(s)?<br>
+    This project(s) will be delete from some users CV!</span></p>
+    <ul>
+        {% for prj in projects_del %}
+            <li><strong>{{ prj.title }}</strong>{% if prj.wg.count %}&emsp;({{ prj.wg.count }} members in work group){% endif %}<br><small class="muted">{{ prj.challenge }}</small></li>
+        {% endfor %}
+    </ul>
+    <form action="{% url erp_projects_manage %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_projects_manage %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-warning" type="submit"><i class="icon-hdd"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

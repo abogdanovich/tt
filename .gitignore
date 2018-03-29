@@ -1,0 +1,13 @@
+*.log
+*.pyo
+*.pyc
+*.idea
+*.sql
+*.zip
+*.gz
+*.rar
+media/
+/nbproject/private/
+/HTML5Application/nbproject/private/
+log.txt
+/log/tt_debug.log

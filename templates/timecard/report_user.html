@@ -1,0 +1,85 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Еженедельный отчет{% endblock %}
+
+{% block report_user %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+    <h3 style="padding:10px;">Еженедельный отчет</h3>
+    <form method="post">
+        <table>
+
+            {% csrf_token %}
+            <tr>
+                <td style="padding:10px;">
+                    <div id = "select_div">
+                        <h5>Выберите проект, над которым вели работу</h5>
+                        <select tabindex="1" id="select_project" name="select_project">
+                            <option selected="selected" disabled="disabled">Choose project...</option>
+                            {% for project in projects_involved_in %}
+                                <option value="{{ project.project_name }}">{{ project.project_name }}</option>
+                            {% endfor %}
+                        </select></div>
+                    <div id="project_div"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">
+                    <h5>Укажите время, которое вы потратили на работу над проектом. Учитывайте при заполнении, что количество рабочих часов на этой неделе {{work_hours}} (выходные: {{holidays}})<br/>При превышении суммарного времени по всем вашим отчетам этого значения ваш руководитель будет проинформирован об овертайме.</h5>
+                    <div id ="hours_area"><textarea name="hours" cols="10" rows="1" id = "hours" tabindex = "2"></textarea></div>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="padding:10px;">
+                    <h5>Напишите отчет</h5>
+                    <div id="report_area"><textarea name="report" cols="70" rows="7" spellcheck="true" id="report" tabindex="3"></textarea></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">
+                    <h5>Напишите свое мнение о поставленных перед вами задачах</h5>
+                    <div id = "feed_area"><textarea name="feedback" cols="70" rows="7" spellcheck="true" id="feedback" tabindex="4" r></textarea></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">
+                    <div id="save_new_report_div" ><input type="button" tabindex="5" id="save_new_report" name = "save_new_report" value=" ОТПРАВИТЬ ОТЧЕТ " onclick="Dajaxice.timecard.save_new_report(Dajax.process, {'choosen_project':select_project.value, 'uid':{{user.id}}, 'report':report.value, 'feedback':feedback.value, 'hours':hours.value, 'week_hours':{{work_hours}}});"/></div>
+                    <div id="update_report_div" style="display:none"><input type="button" tabindex="4" id="update_report" name = "update_report" value=" ОБНОВИТЬ ОТЧЕТ " onclick="Dajaxice.timecard.update_report(Dajax.process, {'rid':rid.value, 'report':report.value, 'feedback':feedback.value, 'hours':hours.value, 'week_hours':{{work_hours}}});"/></div>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <br/>
+        <div style="padding:10px; font-size:large;"  id="msg_area"></div>
+        <br/>
+        <br/>
+        {% if reports_to_show %}
+            {% if overtime %}
+                <h5 style="color:#FF0000">Согласно вашим отчетам, за эту неделю у вас переработка: отработано часов {{overtimed_hours}} из {{work_hours}} </h5>
+            {%endif%}
+            <h5 style="padding:10px;">Мои отчеты за эту неделю:</h5>
+            <table id="report_table" width="100%" style="font-family:Tahoma; border:1px solid; color:#000000; padding:10px" class="zebra2" >
+            <col width="80">
+            <col width="20">
+            <col width="20">
+            <col width="20">
+            {% for report in my_this_week_reports %}
+                <tr >
+                    <td>{{report.project_name}}</td>
+                    <td>hours: {{report.hours}}</td>
+                    <td><a href="/report_user/?del_report={{ report.id }}" ><img src="{{ STATIC_URL }}css/images/del.png"> удалить</a></td>
+                    <td><a href="#" onclick="Dajaxice.timecard.change_report (Dajax.process, {'rid': {{report.id}}});"><img src="{{ STATIC_URL }}css/images/edit.gif"> редактировать</a></td>
+                </tr>
+            {% endfor %}
+
+        {% endif%}
+
+        </table>
+
+        <input type='hidden' id='rid' />
+
+    </form>
+
+{% endblock %}

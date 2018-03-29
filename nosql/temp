@@ -1,0 +1,67 @@
+{% extends "timecard/index.html" %}
+
+{% block page_title %}Мои проекты{% endblock %}
+
+{% block projects %}
+    {% if custom_CSS %}
+    {% endif %}
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Периоды работы на проектах</a></li>
+            <li><a href="#tabs-2"></a></li>
+            <li><a href="#tabs-3"></a></li>
+        </ul>
+
+        <div id="tabs-1" style="color: #0f0f0f;">
+            <div style="padding:10px; width:100%">
+                <h4>Периоды работы на проектах</h4>
+
+                {% for projectRole in rolesOnProjects %}
+                    {% if projectRole.projects__ %}
+                        {% for project in projectRole.projects__ %}
+                            <div class="my_projects_projectRoleLineDiv" >
+                                <div> [ Проект ] {{ project.project_name }} </div>
+                                
+                                
+                                <div class="my_projects_div_role_on_project" >{{projectRole.roleOnProject}}</div>
+                                <div class="my_projects_div_role_on_project" >
+                                    Start:
+                                    <input
+                                        class="my_projects_startDay_roleId"
+                                        id="my_projects_startDay_roleId{{ projectRole.id__ }}"
+                                        value="{{ projectRole.startDayOnProject }}"
+                                        readonly
+
+                                    />
+                                </div>
+
+                                <div class="my_projects_div_role_on_project" >
+                                    Finish:
+                                    <input
+                                        class="my_projects_finishDay_roleId"
+                                        id="my_projects_finishDay_roleId{{ projectRole.id__ }}"
+                                        value="{{ projectRole.finishDayOnProject }}"
+                                        readonly
+                                    />
+                                </div>
+                                <div class="my_projects_update_work_period_on_project"
+                                     id="my_projects_update_work_period_on_project{{ projectRole.id__ }}"
+                                        >
+                                </div>
+                                <div class="cl"></div>
+
+                            </div>
+                            <div class="cl"></div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+    </div>
+{% endblock%}
+
+

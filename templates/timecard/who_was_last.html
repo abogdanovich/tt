@@ -1,0 +1,22 @@
+{% if user.accessLevel == 1 or user.accessLevel == 3 %}
+    <div class="widget">
+        <div style="padding: 10px; background-color:#f7d9f1; border: #cc7968 1px solid;">
+            КТО УХОДИЛ ПОСЛЕДНИЙ ИЗ ОФИСА:
+            <br/><br/>
+
+        <table width="220" style="font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+            {% for e in events %}
+                <tr>
+                    <td>
+                        <strong>{{ e.0 }}</strong>
+                    </td>
+                    <td>
+                        {{ e.1.name }} {{ e.1.surname }}<br/>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        </div>
+    </div>
+{% else %}
+{% endif %}

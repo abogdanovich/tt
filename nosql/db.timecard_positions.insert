@@ -1,0 +1,19 @@
+
+
+
+db.timecard_positions.remove({});
+
+db.timecard_positions.insert({ "_id" : ObjectId("541fd0204f452d10ee4a3a58"), "rus_name" : "Менеджер по персоналу", "name" : "HR-manager" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76831"), "rus_name" : "Менеджер проектов", "name" : "Project Manager" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76832"), "rus_name" : "Разработчик", "name" : "Developer" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76833"), "rus_name" : "Дизайнер", "name" : "Designer" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76834"), "rus_name" : "Тестировщик", "name" : "Tester" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76835"), "rus_name" : "Системный администратор", "name" : "System administrator" });
+db.timecard_positions.insert({ "_id" : ObjectId("541fdc494f452d203fb76836"), "rus_name" : "Босс", "name" : "Boss" });
+
+
+
+db.timecard_positions.find({});
+
+
+

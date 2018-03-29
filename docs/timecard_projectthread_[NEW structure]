@@ -1,0 +1,21 @@
+db.timecard_projectthread.insert({
+
+"who_assigned_id" : NumberInt(4), 
+"user_id" : NumberInt(84), 
+"who_unassigned_id" : "", 
+"user_role" : null, 
+"user_name_surname" : "Брек Алексей", 
+"project_id" : NumberLong(1), 
+"id" : NumberLong(1) }
+
+);
+
+
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c2"), "who_assigned" : "Грек Виталий", "user_id" : NumberLong(2), "who_unassigned" : "", "user_role" : null, "user_name_surname" : "Лазурович Александр", "project_id" : NumberLong(1), "id" : NumberLong(2) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c3"), "who_assigned" : "Грек Виталий", "user_id" : NumberLong(6), "who_unassigned" : "Пользователь удален", "user_role" : null, "user_name_surname" : "Миклаш Виталий", "project_id" : NumberLong(1), "id" : NumberLong(3) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c4"), "who_assigned" : "Грек Виталий", "user_id" : NumberLong(13), "who_unassigned" : "Пользователь удален", "user_role" : null, "user_name_surname" : "Моисеенко Александр", "project_id" : NumberLong(1), "id" : NumberLong(4) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c5"), "who_assigned" : "Грек Виталий", "user_id" : NumberLong(4), "who_unassigned" : "", "user_role" : null, "user_name_surname" : "Грек Виталий", "project_id" : NumberLong(1), "id" : NumberLong(5) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c6"), "who_assigned" : "Игнатьев Валерий", "user_id" : NumberLong(179), "who_unassigned" : "Морозов Дмитрий ", "user_role" : NumberLong(1), "user_name_surname" : "Николаев Илья", "project_id" : NumberLong(14), "id" : NumberLong(6) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c7"), "who_assigned" : "Игнатьев Валерий", "user_id" : NumberLong(127), "who_unassigned" : "", "user_role" : NumberLong(1), "user_name_surname" : "Гришин Александр", "project_id" : NumberLong(14), "id" : NumberLong(7) }
+{ "_id" : ObjectId("54106a8d4f452d328b8e42c8"), "who_assigned" : "Морозов Дмитрий ", "user_id" : NumberLong(32), "who_unassigned" : "", "user_role" : NumberLong(1), "user_name_surname" : "Кирпиченко Андрей", "project_id" : NumberLong(14), "id" : NumberLong(8) }
+

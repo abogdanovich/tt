@@ -1,0 +1,178 @@
+{% load dajaxice_templatetags %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<meta http-equiv="Content-Type" content="text/html;charset=windows-1251">
+<head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, max-age=0, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+
+<title>TimeTrack : {% block page_title %}{% endblock %}</title>
+
+<!-- css section -->
+<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href="{{ STATIC_URL }}css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" /> 
+<!-- end css section -->
+
+<!-- js section -->
+<script src="{{ STATIC_URL }}js/jquery.dajax.core.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{ STATIC_URL }}js/jquery-1.8.0.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{ STATIC_URL }}js/jquery-ui-1.8.23.custom.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="{{ STATIC_URL }}js/func.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- end js section -->
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/nicEdit.js"></script> <script type="text/javascript">
+//<![CDATA[
+  bkLib.onDomLoaded(function() {
+        new nicEditor({fullPanel : true}).panelInstance('newpost');
+	
+  });
+  //]]>
+  </script>
+  
+<script type="text/javascript">
+    var IE = document.all ? true : false
+    if (!IE) document.captureEvents(Event.MOUSEMOVE)
+    var tempX = 0;
+    var tempY = 0;
+    
+    function showauservator(uid) {
+	document.getElementById("avator"+uid).style.display = ""; 
+    }
+    
+    function hideuservator(uid) {
+	document.getElementById("avator"+uid).style.display = "none"; 
+    }
+    
+    
+    function getmousexy(e, uid) {
+	if (IE) { // grab the x-y pos.s if browser is IE
+	    tempX = event.clientX + document.body.scrollLeft;
+	    tempY = event.clientY + document.body.scrollTop;
+	    
+	} else { // grab the x-y pos.s if browser is NS
+	    tempX = e.pageX;
+	    tempY = e.pageY;
+	    //alert(e.pageX)
+	}
+	if (tempX < 0) { tempX = 0 }
+	if (tempY < 0) { tempY = 0 } 
+	
+	document.getElementById("avator"+uid).style.top=tempY/2 + 100;
+	document.getElementById("avator"+uid).style.left=tempX/2;
+	
+    }
+
+</script>
+  
+
+    {% dajaxice_js_import %}
+
+</head>
+
+{% if profile %}
+    {% if profile  == "default" %}
+	<body onload="Dajaxice.timecard.show_user_details(Dajax.process, {'uid': {{ user.id }} });">
+    {% else %}
+	<body onload="Dajaxice.timecard.show_user_details(Dajax.process, {'uid': {{ profile }} });">
+    {% endif %}
+{% else %}
+    <body>
+{% endif %}
+
+<span id="static_url_param" style="display:none;" title="{{ STATIC_URL }}"></span>
+
+<div id="wrap">
+<div id="container">
+
+    <div id="header">
+
+	<div id="caption">
+		<h1 id="title"><a href="#">Time Track</a></h1>
+		<div id="tagline">марсиане тоже работают :(</div>
+	</div>
+	
+	
+	
+	
+
+	<div class="fixed"></div>
+    </div>
+
+
+    <div id="navigation">
+	
+	
+	{% menu %}
+
+    <div class="fixed"></div>
+    </div>
+
+
+	
+
+<div id="content">
+
+
+	<div id="main">
+	    
+	    <div class="data">
+
+	    {% block main %}{% endblock %}
+	    {% block spam %}{% endblock %}
+	    {% block settings %}{% endblock %}
+	    {% block admin %}{% endblock %}
+	    {% block personal %}{% endblock %}
+	    {% block events %}{% endblock %}
+	    {% block teams %}{% endblock %}
+	    {% block duty %}{% endblock %}
+	    
+	    </div>
+
+	</div>
+
+    
+    <div id="sidebar">
+	<div style="padding-left: 20px; padding-top: 5px;">
+	{% block user_list %}{% endblock %}
+	</div>
+	
+	<div id="northsidebar" class="sidebar">
+	    
+	    
+	    {% user_info %}
+	    {% duty_user %}
+	    {% calendar %}
+	    {% spam_module %}
+	    {% bash %}
+	    {% currency %}
+	    {% weather %}
+	    
+	  
+	</div>
+
+    </div>
+
+	<div class="fixed"></div>
+
+</div>	    
+	
+
+
+			<div id="footer">
+			<div id="copyright">
+			Time Track version | by Alex Bogdanovich 2012 year | XIM
+			</div>
+			</div>
+
+
+</div>
+</div>
+
+
+</body>
+</html>

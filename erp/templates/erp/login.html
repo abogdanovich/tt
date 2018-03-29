@@ -1,0 +1,43 @@
+{% extends "erp/base_pretty.html" %}
+
+{% block html_head %}
+    <style type="text/css">
+        .form-signin {
+            max-width: 300px;
+            padding: 19px 29px 29px;
+            margin: 0 auto 20px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
+        .form-signin input[type="text"],
+        .form-signin input[type="password"] {
+            font-size: 16px;
+            height: auto;
+            margin-bottom: 15px;
+            padding: 7px 9px;
+        }
+    </style>
+{% endblock %}
+
+{% block base_content%}
+    <div class="row">
+        <h1>Login to ERP XIM System</h1>
+        <form action="{% url erp_login %}" method="POST" class="form-signin">
+            {% csrf_token %}
+            <label for="username">Login:</label>
+            <input type="text" name="username" value="" id="username">
+            <label for="password">Password:</label>
+            <input type="password" name="password" value="" id="password">
+            <div>
+                <button type="submit" class="btn-large btn-primary"><i class="icon-qrcode"></i> Login</button>
+                <input type="hidden" name="stage" value="validate">
+            </div>
+        </form>
+    </div>
+{% endblock %}

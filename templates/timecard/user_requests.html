@@ -1,0 +1,77 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}personal{% endblock %}
+
+{% block personal %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+<table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+<tr><td>
+<div style="padding: 10px;">
+
+{% if user_requests %}   
+   
+<table width="100%" cellpadding="2" cellspacing="1" style="background-image: url('{{ STATIC_URL }}css/images/bg.jpg'); background-position: bottom">
+
+<h2>Список запросов от пользователей!</h2>
+   
+    <tr>
+    
+    <td>Сообщение пользователя</td>
+    <td>Дата отправки</td>
+    <td>Кто правит</td>
+    <td>Скорректировать</td>
+    
+    </tr>
+
+{% for user_rec in user_requests %}
+    
+    {% if user_rec.status == 0 %}
+    
+    {% if forloop.counter|divisibleby:"2" %}
+    <tr bgcolor="#FFFFFF">
+    {% else %}
+	<tr bgcolor="#E5F0FF">
+    {% endif %}
+    
+     <td align="left" width="65%">{{ user_rec.umess }}</td>
+     <td align="center" >{{ user_rec.date }}</td>
+     {% if user_rec.lock_person == "0" %}
+	<td align="left" >&nbsp;</td>
+      {% else %}
+	    {% if user_rec.lock_person != "" %}
+	    <td align="center"><img id="user_avator" src="{{ MEDIA_URL }}userpic/{{ user_rec.lock_person }}" width="50px"/></td>
+	    {% else %}
+	    <td align="center"><img id="user_avator" src="{{ MEDIA_URL }}userpic/noavator.jpg" width="50px"/></td>
+	    {% endif %}
+	 
+      {% endif %}
+     
+      {% if user_rec.lock_person == "0" %}
+	 <td align="center"><a href="/user_requests/?missed_id={{ user_rec.id }}">Исправить</a></td>
+      {% else %}
+	 {% if author_avator == user_rec.lock_person %}
+	    <td align="center"><a href="/user_requests/?missed_id={{ user_rec.id }}">Вы уже правите...</a></td>
+	 {% else %}
+	 <td align="center">Уже идет правка...</a></td>
+	 {% endif %}
+      {% endif %}
+      
+      {% endif %}
+	
+   {% endfor %}
+    </tr>
+</table>
+
+
+{% else %}
+   <h2> Нет запросов для редактирования!</h2>
+
+{% endif %}
+   
+</td></tr>
+</table>
+
+
+{% endblock %}

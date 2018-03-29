@@ -1,0 +1,21 @@
+{% if user.skype and user.avator and user.hb %}
+{% else %}
+    <div class="widget">
+        <table width="220" style="background-color:#f7923d; border: #cc7968 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td>
+                <div style="padding: 10px;">
+                    Пожалуйста, предоставьте дополнительную информацию о себе<br/><br/>Укажите на странице "Опции" следующие данные:<br/><br/>
+                    {% if not user.skype %}
+                    <strong>- ваш контакт в skype</strong><br/><br/>
+                    {% endif %}
+                    {% if not user.avator %}
+                    <strong>- загрузите ваш аватар</strong><br/><br/>
+                    {% endif %}
+                    {% if not user.hb %}
+                    <strong>- укажите ваш день рождения</strong><br/><br/>
+                    {% endif %}
+                </div>
+            </td></tr>
+        </table>
+    </div>
+{% endif %}

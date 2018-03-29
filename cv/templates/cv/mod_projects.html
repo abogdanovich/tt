@@ -1,0 +1,59 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit Project{% endblock %}
+
+{% block jquery_ready %}
+    $("input[id ^= id_][id $= -date_start]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input[id ^= id_][id $= -date_finish]").datepicker({ "dateFormat": "yy-mm-dd" });
+{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Project data of {{ cv_prj_iforms.instance.name }} {{ cv_prj_iforms.instance.surname }}</h1>
+
+    <form action="{% url erp_cv_mod_projects cv_id=cv_prj_iforms.instance.id %}" method="POST">
+        {% csrf_token %}
+        {{ cv_prj_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            {% for cv_prj_form in cv_prj_iforms %}
+                {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Project/Business Challenge<br><small class="muted">(Dates of start / finish)</small></th>
+                        <th class="span6">Role/Description</th>
+                        <th class="span2">Start Date/<br>Finish Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                {% endif %}
+            <tr class="control-group{% if cv_skill_form.errors %} error{% endif %}">
+            <tr>
+                <td>{{ forloop.counter }}{{ cv_prj_form.id }}{{ cv_prj_form.project }}{{ cv_prj_form.cv }}<input type="hidden" name="project" value="{{ cv_prj_form.instance.project.id }}"></td>
+                <td><a href="{% url erp_project prj_id=cv_prj_form.instance.project.id %}">{{ cv_prj_form.instance.project.title }}</a>&emsp;
+                    {% with cv_prj_form.instance.project.get_state as prj_state %}
+                        {% ifequal prj_state "prepare" %}<span class="badge badge-info" title="in prepare state">P</span>{% endifequal %}
+                        {% ifequal prj_state "develop" %}<span class="badge badge-success" title="in develop state">D</span>{% endifequal %}
+                        {% ifequal prj_state "pause" %}<span class="badge badge-warning" title="in pause state">P</span>{% endifequal %}
+                        {% ifequal prj_state "finish" %}<span class="badge badge"  title="in finish state">F</span>{% endifequal %}
+                    {% endwith %}<br>
+                    <small class="muted">{{ cv_prj_form.instance.project.challenge|truncatewords:25 }}</small><br>
+                    <span class="badge badge-inverse" title="project start date">{{ cv_prj_form.instance.project.date_start }}</span> / <span class="badge badge-inverse" title="project finish date">{{ cv_prj_form.instance.project.date_finish }}</span>
+                </td>
+                <td>{{ cv_prj_form.role }}<br>
+                {{ cv_prj_form.desc }}</td>
+                <td>{{ cv_prj_form.date_start }}{{ cv_prj_form.date_start.errors }}<br>
+                    {{ cv_prj_form.date_finish }}{{ cv_prj_form.date_finish.errors }}
+                </td>
+            </tr>
+            {% if forloop.last %}
+                </tbody>
+            {% endif %}
+            {% endfor %}
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=cv_prj_iforms.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

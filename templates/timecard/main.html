@@ -1,0 +1,102 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Главная{% endblock %}
+
+{% block main %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+<div id="tabs" style="height: 250px;">
+	<ul>
+	{%for office in offices %}
+		<li><a href="#tabs-{{office.short_name}}">{{office.full_name}}</a></li>
+	{% endfor%}
+	</ul>
+
+{% for office in offices %}
+
+	 <div id="tabs-{{office.short_name}}">
+
+
+    <table cellspacing="2" cellpadding="2" border="0" width="98%">
+    <tr>
+    <td valign="top" align="center">
+    {% for user in users %}
+		{% if office.short_name == user.office%}
+	    	{% if forloop.last %}
+
+		<a
+                href="#"
+                id="{{ user.id }}"
+                onmousemove="getmousexy(event, this.id)"
+                onmouseover="showauservator(this.id)"
+                onmouseout="hideuservator(this.id)"
+                onclick="Dajaxice.timecard.show_user_details(Dajax.process, {'uid':this.id});"
+                class="user_form_selected"
+        ><span
+                style="color: #333;"
+        >{{ user.name }} {{ user.surname }}
+
+
+
+
+
+        </span
+        ></a>
+	    {% else %}
+		<a
+           href="#"
+           id="{{ user.id }}"
+           onmousemove="getmousexy(event, this.id)"
+           onmouseover="showauservator(this.id)"
+           onmouseout="hideuservator(this.id)"
+           onclick="Dajaxice.timecard.show_user_details(Dajax.process, {'uid':this.id});"
+           class="user_form_selected"
+        ><span
+                style="color: #333;"
+        >{{ user.name }} {{ user.surname }}
+
+        </span
+        ></a>
+        {% for skill in user.user_skill__ %}
+            <span
+                class="skill_main_page_span"
+                >{{ skill.skill_descr__.rus_name }}</span>
+        {% endfor %}
+
+
+        |
+    	    {% endif %}
+		<div id="avator{{ user.id }}" style="background-color: white; top:0;left:0; position:absolute; border-color:#000000; border:groove #000000; display: none; padding: 10px;">
+		    {% if user.avator %}
+		    <img src="{{ MEDIA_URL }}userpic/{{ user.avator }}">
+		    {% else %}
+
+			{% if user.fb != '' %}
+			    <img id="user_avator" src="https://graph.facebook.com/{{ user.fb }}/picture?type=large">
+			{% else %}
+			    <img src="{{ MEDIA_URL }}userpic/noavator.jpg">
+			{% endif %}
+
+		{% endif %}
+		<br/>
+		    <h3>{{ user.name }} {{ user.surname }}</h3>
+		</div>
+		{% endif %}
+    {% endfor %}
+    </td>
+    </tr>
+    </table>
+
+    </div>
+	{% endfor %}
+</div>
+
+	<center>
+	    <div class="userform">
+		<div id="user_details_area">
+		</div>
+		</div>
+	</center>
+
+{% endblock %}
+

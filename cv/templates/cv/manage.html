@@ -1,0 +1,112 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Manage CVs{% endblock %}
+
+{% block jquery_ready %}
+    $("a#ctrl_fired_sel_all").click(function() {$("input[name ^= form-][name $= -fired]").attr('checked', "checked");});
+    $("a#ctrl_fired_unsel_all").click(function() {$("input[name ^= form-][name $= -fired]").removeAttr('checked');});
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    <h1>CV List for manage</h1>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <span class="brand">Filters</span>
+            <ul class="nav">
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By Offices: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="filter_office_value">All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Not in TT system</a></li>
+                        {% for office in offices %}
+                        <li><a href="#">{{ office.full_name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By Position: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="filter_state_value">All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        {% for pos in positions %}
+                        <li><a href="#">{{ pos }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By State: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="filter_state_value">All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Active</a></li>
+                        <li><a href="#">Fired</a></li>
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+            </ul>
+        </div>
+    </div>
+    {% permission cv 48 %}{# manage CV service data #}
+    <p class="muted">Employees from TimeTrack with manage access automatically will state managers in ERP system also.<br>
+    For Employees who has been <b>fired</b> please check field "Fired".<br>
+    If you want to <b>DELETE</b> one or more CV pleace check the fields "DELETE".</p>
+    <p class="text-warning"><b>WARNING!!!</b> This operation deleted ALL CV data (personal data, contacts, foreign languages & technical expertise skills, and records from workgroups of some projects).</p>
+    {% endpermission %}
+    <div id="employees" style="margin-top: 1em;">
+        <form action="{% url erp_cvs_manage %}" method="POST">
+            {% csrf_token %}
+            {{ cv_mforms.management_form }}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Curriculum Vitae</th>
+                        <th class="span2">Login</th>
+                        <th class="span2">Position</th>
+                        <th class="span2">Fired<br>
+                        <span class="btn-group">
+                            <a id="ctrl_fired_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_fired_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                        </th>
+                        <th class="span2">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cv_form in cv_mforms %}
+                    {% comment %}<tr class="{% if not cv_user_form.instance.wg.count %}error{% else %}{% if not cv_user_form.instance.position or not cv_user_form.instance.fl.count or not cv_user_form.instance.skills.count %}warning{% else %}success{% endif %}{% endif %}">{% endcomment %}
+                    <tr{% if cv_form.errors %} class="error"{% else %}{% if cv_form.fired.value %} class="warning"{% endif %}{% endif %}>
+                        <td>{{ forloop.counter }}{{ cv_form.id }}</td>
+                        <td><a href="{% url erp_cv cv_id=cv_form.id.value %}" title="view the curriculum vitae">{{ cv_form.get_user_name }}</a></td>
+                        <td>{{ cv_form.login }}{{ cv_form.login.errors }}</td>
+                        <td>{{ cv_form.position }}{{ cv_form.position.errors }}</td>
+                        <td>{{ cv_form.fired }}{{ cv_form.fired.errors }}</td>
+                        <td>{{ cv_form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <input type="hidden" name="stage" value="validate">
+            <div class="btn-group">
+                <a href="{% url erp_cv_add %}" class="btn"><i class="icon-plus"></i> Add</a>
+                <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

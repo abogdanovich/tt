@@ -1,0 +1,613 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Админка{% endblock %}
+
+{% block admin %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+    <div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Управление персоналом</a></li>
+        <li><a href="#tabs-2">Управление отделами и ролями</a></li>
+        <li><a href="#tabs-3">Прочее</a></li>
+        <li><a href="#tabs-4">Владение языками</a></li>
+        <li><a href="#tabs-5">Навыки</a></li>
+        <li><a href="#tabs-6">Проекты</a></li>
+        <li><a href="#tabs-7">Тэги</a></li>
+    </ul>
+
+    <div id="tabs-1" style="color: #0f0f0f;">
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td>
+                <div style="padding: 10px;">
+                    <table width="100%" cellpadding="1" cellspacing="1">
+                        <tr bgcolor="#E5F0FF">
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="input" name="user_name" id="user_name" value="">
+                                    Имя<br/>
+                                    <input type="input" name="user_surname" id="user_surname" value="">
+                                    Фамилия<br/>
+                                    <input type="input" name="user_login" id="user_login" value="">
+                                    Логин<br/>
+                                    <input type="input" name="user_email" id="user_email" value="@minsk.ximxim.com">
+                                    Адрес эл.почты<br/>
+
+                                    <select id="user_dep">
+                                        {% for dep in deplist %}
+                                            <option value="{{ dep.name }}">{{ dep.name }}</option>
+                                        {% endfor %}
+                                    </select>Подразделение<br/>
+                                    <select id="user_profession">
+                                        {% for prof in proflist %}
+                                            <option value="{{prof.name}}">{{prof.name}}</option>
+                                        {% endfor%}
+                                    </select>Профессия<br/>
+                                    <select id="user_office">
+                                        {% for office in offices %}
+                                            <option value="{{office.short_name}}">{{office.full_name}}</option>
+                                        {% endfor%}
+                                    </select>Офис<br/>
+                                    <select id="user_gender">
+                                        <option value="M">Мужской</option>
+                                        <option value="F">Женский</option>
+                                    </select>Пол<br/>
+                                    <br/><br/>
+                                    <div id ="user_add_button_div">
+                                        <input type="button" name="add_new_user" id="add_new_user_button" onclick="Dajaxice.timecard.add_new_user(Dajax.process, {'user_name': user_name.value, 'user_surname':user_surname.value, 'user_login':user_login.value,'user_email':user_email.value, 'user_dep':user_dep.value, 'user_office':user_office.value, 'user_gender':user_gender.value, 'user_prof':user_profession.value});" value="Добавить пользователя" />
+                                    </div>
+                                    <div id="user_edit_button_div" style="display:none">
+                                        <input type="button" name="edit_existing_user" id="edit_existing_user_button" onclick="Dajaxice.timecard.edit_existing_user(Dajax.process, {'user_name': user_name.value, 'user_surname':user_surname.value, 'user_login':user_login.value,'user_email':user_email.value, 'user_dep':user_dep.value, 'user_office':user_office.value, 'user_gender':user_gender.value, 'user_prof':user_profession.value, 'uid':uid.value});" value="Редактировать пользователя" />
+                                    </div>
+                                    <input type='hidden' id='uid'/>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                </div>
+            </td></tr>
+        </table>
+        <br/>
+        <div id="msg_area_add_user"></div>
+        <br/>
+        <br/>
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td>
+
+                {% for office in offices %}
+
+                    <div style="padding: 10px;">
+                        <table width="100%" cellpadding="1" cellspacing="1">
+                            <h2>{{office.full_name}}</h2>
+
+                            {%for user in users%}
+                                {% if office.short_name == user.office %}
+
+                                    <tr bgcolor="#FFFFFF">
+
+                                        {% if user.accessLevel == 1 %}
+                                            <tr bgcolor="#FF7A7A">
+                                        {% endif %}
+
+                                        {% if user.accessLevel == 2 %}
+                                            <tr bgcolor="#64BD8F">
+                                        {% endif %}
+
+                                        {% if user.accessLevel == 3 %}
+                                            <tr bgcolor="#A4A797">
+                                        {% endif %}
+
+                                        {% if user.accessLevel == 4 %}
+                                            <tr bgcolor="#A4BC39">
+                                        {% endif %}
+
+                                        <td>
+                                            <a
+                                                style="color: #000000"
+                                                href=#
+                                                onclick="Dajaxice.timecard.edit_user_data(
+                                                Dajax.process,
+                                                {'uid':{{user.id}}});"
+                                        >{{ user.surname }} {{ user.name }}</a></td>
+                                        <td  align="center">{% if user.profession %}{{ user.profession }}{% else %}<label style="color: darkred">spec N/A</label>{% endif %}</td>
+                                        <td  align="center"><a href="#ud" style="color:#2970A6 " onclick="Dajaxice.timecard.show_user_deletetion_confirmation_form(Dajax.process, {'uid':{{ user.id }}});">удалить</a></td>
+                                        <td  align="center">{{ user.login }}</td>
+
+                                        <td>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                {% if user.accessLevel == 4 %}
+                                                    <input type="button" disabled="disabled" name="make_pm_button" id="make_pm_button_{{ user.id }}" onclick="Dajaxice.timecard.make_pm(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_pm_button_{{ user.id }}' });" value="pm" />
+                                                {% else %}
+                                                    <input type="button" name="make_pm_button" id="make_pm_button_{{ user.id }}" onclick="Dajaxice.timecard.make_pm(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_pm_button_{{ user.id }}' });" value="pm" />
+                                                {% endif %}
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                {% if user.accessLevel == 3 %}
+                                                    <input type="button" disabled="disabled" name="make_root_button" id="make_root_button_{{ user.id }}" onclick="Dajaxice.timecard.make_root(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_root_button_{{ user.id }}' });" value="root" />
+                                                {% else %}
+                                                    <input type="button" name="make_root_button" id="make_root_button_{{ user.id }}" onclick="Dajaxice.timecard.make_root(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_root_button_{{ user.id }}' });" value="root" />
+                                                {% endif %}
+
+                                            </form>
+
+                                        </td><td>
+
+
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            {% if user.accessLevel == 2 %}
+                                                <input type="button" disabled="disabled" name="make_admin_button" id="make_admin_button_{{ user.id }}" onclick="Dajaxice.timecard.make_admin(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_admin_button_{{ user.id }}' });" value="admin" />
+                                            {% else %}
+                                                <input type="button" name="make_admin_button" id="make_admin_button_{{ user.id }}" onclick="Dajaxice.timecard.make_admin(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_admin_button_{{ user.id }}' });" value="admin" />
+                                            {% endif %}
+
+                                        </form>
+
+                                    </td><td>
+
+                                        <form method="post">
+                                            {% csrf_token %}
+
+                                            {% if user.accessLevel == 1 %}
+                                                <input type="button" disabled="disabled" name="make_boss_button" id="make_boss_button_{{ user.id }}" onclick="Dajaxice.timecard.make_boss(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_boss_button_{{ user.id }}' });" value="boss" />
+                                            {% else %}
+                                                <input type="button" name="make_boss_button" id="make_boss_button_{{ user.id }}" onclick="Dajaxice.timecard.make_boss(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_boss_button_{{ user.id }}' });" value="boss" />
+                                            {% endif %}
+                                        </form>
+
+                                    </td><td>
+
+                                        <form method="post">
+                                            {% csrf_token %}
+
+                                            {% if user.accessLevel == 0 %}
+                                                <input type="button" disabled="disabled" name="make_user_button" id="make_user_button_{{ user.id }}" onclick="Dajaxice.timecard.make_user(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_user_button_{{ user.id }}' });" value="user" />
+                                            {% else %}
+                                                <input type="button" name="make_user_button" id="make_user_button_{{ user.id }}" onclick="Dajaxice.timecard.make_user(Dajax.process, {'uid': {{ user.id }}, 'button_id': 'make_user_button_{{ user.id }}' });" value="user" />
+                                            {% endif %}
+                                        </form>
+
+                                    </td>
+
+                                        <td  align="center">{% if user.dep %}{{ user.dep }}{% else %}<label style="color: darkred">dep N/A</label>{% endif %}</td>
+
+                                        </tr>
+                                {% endif %}
+                            {% endfor %}
+
+                        </table>
+                        <br/>
+                        <p>
+
+                    </div>
+                {% endfor %}
+            </td></tr>
+        </table>
+        <br/><br/>
+        <span id="ud" />
+        <div id="user_deletion_dummy_protection" style="background: #ffb6c1; text-align: center;">
+        </div><br/><br/>
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td>
+                <div style="padding: 10px;">
+                    <table width="100%" cellpadding="1" cellspacing="1">
+                        <tr bgcolor="#E5F0FF">
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="input" name="office_full_name" id="office_full_name" value="">
+                                    <br/>Название города, в котором расположен офис. Например:<strong> Москва</strong><br/><br/>
+                                    <input type="input" name="office_short_name" id="office_short_name" value="">
+                                    <br/>Кодовое обозначение города (не более 2 символов), в котором расположен офис. Например:<strong> МО</strong><br/><br/>
+                                    <input type="input" name="office_boss_email" id="office_boss_email" value="">
+                                    <br/>Адрес эл.почты руководителя офиса.Например: <strong> boss@moscow_office.ru</strong><br/><br/>
+                                    <input type="input" name="office_mass_email" id="office_mass_email" value="">
+                                    <br/>Адрес эл.почты для массовой рассылки по офису. Например:<strong> common@moscow_office.ru</strong><br/><br/>
+                                    <input type="input" name="office_time_shift" id="office_time_shift" value="">
+                                    <br/>Разница между временем сервера и временем офиса в секундах. Например, в ситуации, когда сервер в Минске, а новый офис - в Москве:<strong> 3600</strong>
+                                    <br/>Если сервер в Москве, а новый офис в Минске, то: <strong>-3600</strong><br/><br/>
+                                    <input type="input" name="office_weather_script" id="office_weather_script" value="">
+                                    <br/>Скрипт для погодного информера с http://www.pogoda.by/meteoinformer/. Например, для Москвы:<strong>http://pogoda.by/meteoinformer/js/26850_1.js</strong><br/><br/>
+                                    <br/>
+                                    <input type="button" name="add_new_office" id="add_new_office" onclick="Dajaxice.timecard.add_new_office(Dajax.process, {'full_name': office_full_name.value, 'short_name':office_short_name.value, 'boss_email':office_boss_email.value,  'mass_email':office_mass_email.value, 'time_shift':office_time_shift.value, 'weather_script':office_weather_script.value });" value="Добавить офис" />
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><br/>Существующие на текущий момент офисы:<br/><br/>
+                            </td>
+                        </tr>
+                        {% for office in offices %}
+                            <tr><td>
+                                <div ><b>{{ office.full_name }} ({{ office.short_name }}, {{ office.boss_email}}, {{ office.mass_email }}, {{ office.time_shift }}, {{ office.weather_script }})</b></div>
+                            </td></tr>
+                        {% endfor %}
+                    </table>
+                    <br/>
+                </div>
+            </td></tr>
+        </table>
+        <br/>
+        <div id="msg_area_office"></div>
+    </div>
+
+    <div id="tabs-2" style="color: #0f0f0f;">
+    <br/>
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr bgcolor="#E5F0FF">
+                <td align="center">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <label for="new_dep">Добавить новый отдел:</label><br/>
+                    <input type="text" id="new_dep" value=""/><br/>
+                    <input type="button" id="add_new_dep" onclick="Dajaxice.timecard.add_new_dep_or_prof(Dajax.process, {'data_name': new_dep.value, 'data_type': 'dep'});" value="Добавить новый отдел" />
+                    <div id="dep_msg"></div>
+                    <br/>
+                    <br/>
+                    <br/>
+                </td>
+                <td align="center">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <label for="new_prof">Добавить новую должность:</label><br/>
+                    <input type="text" id="new_prof" value=""/><br/>
+                    <input type="button" id="add_new_prof" onclick="Dajaxice.timecard.add_new_dep_or_prof(Dajax.process, {'data_name': new_prof.value, 'data_type': 'prof'});" value="Добавить новую должность" />
+                    <div id="prof_msg"></div>
+                    <br/>
+                    <br/>
+                    <br/>
+                </td>
+                <td align="center">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <label for="new_role">Добавить новую роль на проекты:</label><br/>
+                    <input type="text" id="new_role" value=""/><br/>
+                    <input type="button" id="add_new_role" onclick="Dajaxice.timecard.add_new_dep_or_prof(Dajax.process, {'data_name': new_role.value, 'data_type': 'role'});" value="Добавить новую роль на проекте" />
+                    <div id="prof_role"></div>
+                    <br/>
+                    <br/>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+        <br/><br/>
+        <table width=100% class="zebra" cellpadding="2" cellspacing="0">
+            <tr valign="top">
+                <td align="center">
+                    <h3>Отделы<br/></h3>
+                    <table id="deps_table" cellpadding="2" cellspacing="0">
+                        {% for dep in deplist %}
+                            <tr>
+                                <td>
+                                    <br/>{{ dep }}<br/>
+                                </td>
+                                <td style="padding: 10px;">
+                                    <a href="#dpp" onclick="Dajaxice.timecard.show_dpp_deletetion_confirmation_form(Dajax.process, {'data_id':{{ dep.id }}, 'data_type':'dep'});"><img src="{{ STATIC_URL }}css/images/del.png"/></a>
+                                </td>
+                            </tr>
+                        {%  endfor %}
+                    </table>
+                </td>
+                <td align="center">
+                    <h3>Должности<br/></h3>
+                    <table id="profs_table" cellpadding="2" cellspacing="0">
+                        {% for prof in proflist %}
+                            <tr>
+                                <td>
+                                    <br/>{{ prof }}<br/>
+                                </td>
+                                <td style="padding: 10px;">
+                                    <a href="#dpp" onclick="Dajaxice.timecard.show_dpp_deletetion_confirmation_form(Dajax.process, {'data_id':{{ prof.id }}, 'data_type':'prof'});"><img src="{{ STATIC_URL }}css/images/del.png"/></a>
+                                </td>
+                            </tr>
+                        {%  endfor %}
+                    </table>
+                </td>
+                <td align="center">
+                    <h3>Проектные роли<br/></h3>
+                    <table id="roles_table" cellpadding="2" cellspacing="0">
+                        {% for role in roleslist %}
+                            <tr>
+                                <td>
+                                    <br/>{{ role }}<br/>
+                                </td>
+                                <td style="padding: 10px;">
+                                    <a href="#dpp" onclick="Dajaxice.timecard.show_dpp_deletetion_confirmation_form(Dajax.process, {'data_id':{{ role.id }}, 'data_type':'role'});"><img src="{{ STATIC_URL }}css/images/del.png"/></a>
+                                </td>
+                            </tr>
+                        {%  endfor %}
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br/><br/>
+        <div id="dpp" style="background: #ffb6c1; text-align: center;"></div>
+    </div>
+
+    <div id="tabs-3" style="color: #0f0f0f;">
+        <table>
+            <tr>
+                <td>
+                    <form method="post" style="padding: 10px;">
+                    {% csrf_token %}
+                    <br/>
+                    <div id="datepicker_dayoff" name="datepicker_dayoff"></div>
+                        <br/>
+                        <br/>
+                    <input type="button" name="set_day_off" id="save_u_set_button" onclick="Dajaxice.timecard.set_day_off(Dajax.process, {'dt':datepicker_dayoff.value, 'office':select_office_month_calendar.value});" value="Выставить выходной|рабочий день" />
+                    </form>
+                </td>
+                <td>
+                    Назначить выходные/рабочие дни для следующего офиса:
+                    <select id="select_office_month_calendar" >
+                    {% for office in offices %}
+                        {% if office.short_name == current_user.office  %}
+                            <option value="{{office.short_name}}" selected="selected">{{office.full_name}}</option>
+                        {% else %}
+                            <option value="{{office.short_name}}">{{office.full_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <div id="msg_area_dayoff"></div>
+
+        <div style="padding: 10px;">
+            <br/><br/>Формирование нового голосования
+            <table width="100%" cellpadding="1" cellspacing="1">
+                <tr bgcolor="#E5F0FF">
+                    <td><input type="input" name="vote_question" id="vote_question" value="">
+                    </td>
+                    <td>Введите утверждение, выносимое на голосование
+                    </td>
+                </tr>
+                <tr bgcolor="#E5F0FF">
+                    <td><input type="input" name="vote_yes" id="vote_yes" value="">
+                    </td>
+                    <td>Введите текст первого варианта ответа ("Я за!").
+                    </td>
+                </tr>
+                <tr bgcolor="#E5F0FF">
+                    <td><input type="input" name="vote_no" id="vote_no" value="">
+                    </td>
+                    <td>Введите текст второго варианта ответа ("Я против!").
+                    </td>
+                </tr>
+                <tr bgcolor="#E5F0FF">
+                    <td><input type="input" name="vote_dontcare" id="vote_dontcare" value="">
+                    </td>
+                    <td>Введите текст третьего варианта ответа ("Мне все равно").
+                    </td>
+                </tr>
+
+                <tr bgcolor="#E5F0FF">
+                    <td>
+                        <select id="vote_office" name = "vote_office">
+                            {% for office in offices %}
+                                <option value = "{{office.short_name}}">{{office.full_name}}</option>
+                            {% endfor%}
+                        </select>
+                    </td>
+                    <td bgcolor="#E5F0FF">Выберите офис, для которого хотели бы организовать голосование
+                    </td>
+                </tr>
+                <tr bgcolor="#E5F0FF">
+                    <td><input type="button" name="add_vote" id="add_vote" onclick="Dajaxice.timecard.add_vote(Dajax.process, {'question': vote_question.value , 'yes': vote_yes.value, 'no':vote_no.value, 'dontcare':vote_dontcare.value, 'office':vote_office.value});" value="Добавить/заменить голосование" />
+                    </td>
+                </tr>
+            </table>
+            <div id="msg_area_votes"></div>
+            {% if votes %}
+                <div style="padding: 10px; color:  #0f0f0f;"> <!--simple checking do we have some voting to show or dont (set is empty or not)-->
+                    <h4>ГОЛОСОВАНИЯ</h4><br/>
+                    {% for office in offices %}
+                        <table width="100%" cellpadding="1" cellspacing="1">
+                            <col width="80"/>
+                            <col width="20" />
+                            <col width="20"/>
+                            <col width="20"/>
+                            <col width="20"/>
+                            <col width="20"/>
+                            <h5>{{office.full_name}}</h5>
+                            {% for voting in votes %}
+                                {% if voting.office == office.short_name %}
+                                    <tr height="25">
+                                        <td>{{voting.question}}</td>
+                                        <td><a href ="#votes_result" style="color:#2970A6 " onclick="Dajaxice.timecard.show_voting_details(Dajax.process, {'voting_id':{{voting.id}},'show_or_hide':vsh.value});" >Показать/скрыть голоса</a></td>
+                                        <td>{% if voting.archived %}<a href="/admin/?del_voting={{ voting.id }}">Удалить из базы</a>{% endif %}</td>
+                                        <td bgcolor="#CCFFCC"><strong>{{voting.votes_yes_desc}}: {{voting.votes_yes}}</strong></td>
+                                        <td bgcolor="#FFCCCC"><strong>{{voting.votes_no_desc}}: {{voting.votes_no}}</strong></td>
+                                        <td bgcolor="#FFFFCC"><strong>{{voting.votes_dontcare_desc}}: {{voting.votes_dontcare}}</strong></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                    {% endfor %}
+                </div>
+            {% endif%}
+            <span id="votes_result"/>
+            <div id="secret_votings_results" style="padding:10px;"></div>
+        </div>
+        <input type='hidden' id='vsh' value="0"/>
+    </div>
+
+    <div id="tabs-4" style="color: #0f0f0f;" >
+        <div><h1>Владение языками</h1></div>
+        {% for group in groupedUsers %}
+            <div class="admin_div_office">
+                <div class="admin_h2_office_name">
+                    <h2>{{group.0.office_name__}}</h2>
+                </div>
+                {% for user in group %}
+                    <div class="admin_div_user_lang_skill" >
+                        <div
+                                class="admin_note_user_lang_skill"
+                                id="admin_note_user_lang_skill_{{user.id}}"
+                        >
+                            <div class="admin_li_user
+
+                            {% if user.can_edit_language_skill_ == 1 %}
+                                open-updating
+                            {% else %}
+                                closed-updating
+                            {% endif %}
+
+                            " id="admin_li_user{{user.id}}" >
+                                {{user.name}} {{user.surname}}
+                            </div>
+                            <div
+                                class="admin_li_user_{% if user.can_edit_language_skill_ == 1 %}{% else %}un{% endif %}block_language_updating"
+                                id="admin_li_user_{% if user.can_edit_language_skill_ == 1 %}{% else %}un{% endif %}block_language_updating{{user.id}}" >
+                            </div>
+                        </div>
+                        {% if user.user_language_list %}
+                            <div class="admin_user_language_skills" id="admin_user_language_skills_{{user.id}}">
+                            {% for lang in user.user_language_list %}
+                                <div
+                                    class="admin_language_string"
+                                    id="admin_language_string_{{lang.language_id}}"
+                                    ><div class="admin_lang_skill_element" ><span class="bold_text">{{lang.name}}</span></div
+                                    ><div class="admin_lang_skill_element_description" ><span class="bold_text">Письменный: </span>{{lang.skill_name_written}}</div
+                                    ><div class="admin_lang_skill_element_description" ><span class="bold_text">Разговорный: </span>{{lang.skill_name_spoken}}</div
+                                ></div>
+                                <div class="cl" ></div>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="cl">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="tabs-5" style="color: #0f0f0f;" >
+        <div><h1>Навыки</h1></div>
+         {% for group in groupedUsers %}
+                <div class="admin_div_office">
+                    <div class="admin_h2_office_name">
+                        <h2>{{group.0.office_name__}}</h2>
+                            {% for user in group %}
+                                <div class="admin_divli_username" >{{user.name}} {{user.surname}}</div>
+
+                                    <div
+                                            class="admin_div_button_{% if user.can_edit_skill == 0 %}un{% endif %}block_editing_skills"
+                                            id="admin_div_button_{% if user.can_edit_skill == 0 %}un{% endif %}block_editing_skills{{user.id}}"
+                                        ></div>
+                                    <div class="cl"></div>
+
+                                        <div class="admin_user_skills" id="admin_user_skills_283">
+                                            {% for user_skill in user.user_skill_list__ %}
+
+                                                <div
+                                                        class="admin_string"
+                                                        id="admin_string_{{user_skill.skill_id}}"
+
+                                                    ><div
+
+                                                        class="admin_skill_element"
+
+                                                        ><span
+                                                            class="bold_text"
+                                                                >{{user_skill.skill_name__}}</span
+                                                    ></div
+                                                    ><div class="admin_skill_element_description"
+                                                        ><span class="bold_text"> [ </span
+                                                        >{{user_skill.description}}<span class="bold_text"> ] </span
+                                                        ></div
+                                                ></div>
+                                                <div class="cl"></div>
+                                            {% endfor %}
+                                        </div>
+
+
+
+
+                            {% endfor %}
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+
+    <div id="tabs-6" style="color: #0f0f0f;" >
+        <div><h1>Проекты</h1></div>
+         {% for group in groupedUsers %}
+                <div class="admin_div_office">
+                    <div class="admin_h2_office_name">
+                        <h2>{{group.0.office_name__}}</h2>
+                            {% for user in group %}
+                                <div class="admin_divli_username" >{{user.name}} {{user.surname}}</div>
+
+                                    <div class="cl"></div>
+
+                                        <div class="admin_user_skills" id="admin_user_skills_283">
+                                            {% for role in user.roles_info__ %}
+
+                                                <div
+                                                        class="admin_string"
+                                                        id="admin_string_{{user_project.project_id}}"
+
+                                                    ><div
+
+                                                        class="admin_skill_element"
+
+                                                        ><span
+                                                        class="bold_text"
+                                                    >[ {{role.project_info__.project_name}} ] </span
+                                                    ><span>Роль на проекте: {{role.roleOnProject}}</span
+                                                    ></div
+                                                ></div>
+                                                <div class="cl"></div>
+
+                                            {% endfor %}
+
+
+
+                                        </div>
+                            {% endfor %}
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+
+
+        <div id="tabs-7" style="color: #0f0f0f;" >
+        <div><h1>Теги</h1></div>
+
+
+            {% for skilltag in skillTagsWithUsers %}
+            <div class="admin_skilltag_div" >
+                <div>
+                    <div>[ {{skilltag.name}} ]</div>
+                                {% for userList in skilltag.users_skill_tag_ids__ %}
+                                {% for userInfo in userList.users_with_skill__ %}
+                                    <div>{{userInfo.name}} {{userInfo.surname}}</div>
+                                {% endfor %}
+                                {% endfor %}
+
+                            {% if skilltag.users_skill_tag_ids__ %}
+
+                            {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+
+        </div>
+
+
+    </div>
+{% endblock %}

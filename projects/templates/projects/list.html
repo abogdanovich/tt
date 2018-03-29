@@ -1,0 +1,74 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Projects List{% endblock %}
+
+{% block jquery_ready %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project List</h1>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <span class="brand">Filters</span>
+            <ul class="nav">
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By States: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id='filter_state_value'>All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        {% for state in states %}
+                        <li><a href="#">{{ state }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By Presets: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id='filter_preset_value'>All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        {% for preset in presets %}
+                        <li><a href="#">{{ preset }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+            </ul>
+        </div>
+    </div>
+    <table class="table table-bordered table-hover table-condensed" style="margin-top: 1em;">
+        <thead>
+            <tr>
+                <th class="span1">#</th>
+                <th class="span3">Project Title / Preset</th>
+                <th class="span2">Total Develop Time<br>(hours/days)</th>
+                <th class="span2">Start Date<br>Finish Date</th>
+                <th>Service / Industry</th>
+                <th class="span1">Technical Requirements count</th>
+                <th class="span1">WorkGroup members</th>
+                <th class="span1">State</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr{% if project.wg.count and project.requirements.count %}{% if project.pause.value %} class="warning"{% endif %}{% else %} class="error"{% endif %}>
+                <td class="ta_cm">{{ forloop.counter }}</td>
+                <td class="ta_lm"><a href="{% url erp_project prj_id=project.id %}">{{ project.title }}</a><br><span class="muted">Preset: {{ project.preset|default_if_none:"&mdash;" }}</span></td>
+                <td class="ta_cm">{{ project.dev_time }}/{% to_days project.dev_time %}</td>
+                <td class="ta_cm">{{ project.date_start|default_if_none:"&mdash;" }}<br>
+                    {{ project.date_finish|default_if_none:"&mdash;" }}</td>
+                <td class="ta_lm">{{ project.service }}<br>
+                    {{ project.industry }}</td>
+                <td class="ta_cm">{% if project.requirements.count %}<b class="text-success">{{ project.requirements.count }}</b>{% else %}<b class="text-error" title="Technical Requirements is empty!">0</b>{% endif %}</td>
+                <td class="ta_cm">{% if project.wg.count %}<b class="text-success">{{ project.wg.count }}</b>{% else %}<b class="text-error" title="Work Group is empty!">0</b>{% endif %}</td>
+                <td class="ta_cm">{% if project.pause %}<span class="badge badge-warning">Pause</span>{% else %}&mdash;{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

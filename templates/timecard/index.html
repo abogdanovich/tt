@@ -1,0 +1,197 @@
+{% load dajaxice_templatetags %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<meta http-equiv="Content-Type" content="text/html;charset=windows-1251">
+<head>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, max-age=0, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+
+    <title>TimeTrack : {% block page_title %}{% endblock %}</title>
+
+    <!-- css section -->
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="{{ STATIC_URL }}css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="{{ STATIC_URL }}css/jquery.masterblaster/jquery.masterblaster.css" rel="stylesheet" type="text/css" media="all" />
+    <!--<link href="{{ STATIC_URL }}css/multiselect.css" media="screen" rel="stylesheet" type="text/css" />-->
+    <!-- end css section -->
+
+    <script src="{{ STATIC_URL }}js/jquery.dajax.core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ STATIC_URL }}js/jquery-1.8.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ STATIC_URL }}js/jquery-ui-1.8.23.custom.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="{{ STATIC_URL }}js/func.js" type="text/javascript" charset="utf-8"></script>
+
+
+
+    <script src="{{ STATIC_URL }}js/admin.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="{{ STATIC_URL }}js/projects.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ STATIC_URL }}js/my_projects.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/doctordogg.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/nicEdit.js"></script>
+
+
+
+    <!-- validEasy plugin [for example: for email validation]-->
+    <!-- [URL][http://kaayru.github.io/jquery-valideasy/]-->
+    <!-- [URL][http://jquery-plugins.net/valideasy-jquery-plugin-for-form-validation]-->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-valideasy/jquery-valideasy.min.js"></script>
+    <!-- validEasy plugin [for example: for email validation] [END]-->
+
+
+
+    <!-- [URL] [http://www.jqueryscript.net/demo/Easy-jQuery-Input-Mask-Plugin-inputmask/] [jquery.inputmask-2.x.zip]-->
+    <!-- [URL] [https://github.com/michael-lynch/open-weather] [open-weather-master.zip]-->
+
+
+
+    <!-- [URL] [http://jquery-plugins.net/tokenfield-jquery-tag-token-plugin-for-bootstrap] -->
+    <!-- [URL] [http://timschlechter.github.io/bootstrap-tagsinput/examples/] -->
+    <!-- [URL] [http://jquery-plugins.net/page/43] -->
+
+
+
+    <!-- Add tag element on the page -->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.masterblaster-master/jquery.masterblaster.js"></script>
+    <!-- [END] Add tag element on the page -->
+
+
+
+
+
+	<!-- Beautiful uploader -->
+    <script src="{{ STATIC_URL }}js/mini-upload-form/assets/js/jquery.knob.js"></script>
+	<!-- jQuery File Upload Dependencies -->
+	<script src="{{ STATIC_URL }}js/mini-upload-form/assets/js/jquery.ui.widget.js"></script>
+	<script src="{{ STATIC_URL }}js/mini-upload-form/assets/js/jquery.iframe-transport.js"></script>
+	<script src="{{ STATIC_URL }}js/mini-upload-form/assets/js/jquery.fileupload.js"></script>
+
+
+
+
+
+	<!-- Our main JS file -->
+	<script src="{{ STATIC_URL }}js/mini-upload-form/assets/js/script.js"></script>
+	<!-- [END] Beautiful uploader -->
+
+    <script type="text/javascript">
+    //<![CDATA[
+
+    window.onload = function() {
+
+    bkLib.onDomLoaded(function() {
+        new nicEditor({fullPanel : true}).panelInstance('newpost');
+
+    });
+    }
+    //]]>
+    </script>
+
+
+
+    <script type="text/javascript">
+        var IE = document.all ? true : false
+        if (!IE) document.captureEvents(Event.MOUSEMOVE)
+        var tempX = 0;
+        var tempY = 0;
+
+        function showauservator(uid) {
+            document.getElementById("avator"+uid).style.display = "";
+        }
+
+        function hideuservator(uid) {
+            document.getElementById("avator"+uid).style.display = "none";
+        }
+
+        function getmousexy(e, uid) {
+            if (IE) { // grab the x-y pos.s if browser is IE
+                tempX = event.clientX + document.body.scrollLeft;
+                tempY = event.clientY + document.body.scrollTop;
+
+            } else { // grab the x-y pos.s if browser is NS
+                tempX = e.pageX;
+                tempY = e.pageY;
+                //alert(e.pageX)
+            }
+            if (tempX < 0) { tempX = 0 }
+            if (tempY < 0) { tempY = 0 }
+
+            document.getElementById("avator"+uid).style.top=tempY/2 + 100;
+            document.getElementById("avator"+uid).style.left=tempX/2;
+
+        }
+    </script>
+    {% dajaxice_js_import %}
+</head>
+
+{% if profile %}
+    {% if profile  == "default" %}
+        <body onload="Dajaxice.timecard.show_user_details(Dajax.process, {'uid': {{ user.id }} });">
+    {% else %}
+        <body onload="Dajaxice.timecard.show_user_details(Dajax.process, {'uid': {{ profile }} });">
+    {% endif %}
+{% else %}
+    <body>
+{% endif %}
+
+<span id="static_url_param" style="display:none;" title="{{ STATIC_URL }}"></span>
+
+<div id="wrap">
+    <div id="container">
+        <div id="header">
+            <div class="fixed"></div>
+        </div>
+        <div id="navigation">
+            {% menu %}
+            <div class="fixed"></div>
+        </div>
+        <div id="content">
+            <div id="main">
+                <div class="data">
+                    {% block main %}{% endblock %}
+                    {% block spam %}{% endblock %}
+                    {% block settings %}{% endblock %}
+                    {% block admin %}{% endblock %}
+                    {% block personal %}{% endblock %}
+                    {% block report_user %}{% endblock %}
+                    {% block reports %}{% endblock %}
+                    {% block events %}{% endblock %}
+                    {% block reservation %}{% endblock %}
+                    {% block teams %}{% endblock %}
+                    {% block duty %}{% endblock %}
+                    {% block projects %}{% endblock %}
+                    {% block cv %}{% endblock %}
+                </div>
+            </div>
+            <div id="sidebar">
+                <div style="padding-left: 20px; padding-top: 5px;">
+                    {% block user_list %}{% endblock %}
+                </div>
+                <div id="northsidebar" class="sidebar">
+                    {% check_user_provide_full_info %}
+                    {% user_info %}
+                    {% hb_informer %}
+                    {% voting %}
+                    {% duty_user %}
+                    {% calendar %}
+                    {% spam_module %}
+                    {% who_was_last %}
+                    {% bash %}
+                    {% currency %}
+                    {% weather %}
+                </div>
+            </div>
+            <div class="fixed"></div>
+        </div>
+        <div id="footer">
+            <div id="copyright">
+                XIM Time Track | Автор|Идея: Александр Богданович<br/>Техподдержка: Александр Богданович (все вопросы, предложения, замечания писать сюда:<a href="skype:bogdanovichalexandr?chat"><img src="{{STATIC_URL}}/css/images/skype.png" />&nbsp;bogdanovichalexandr</a>)
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

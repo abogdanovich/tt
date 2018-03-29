@@ -1,0 +1,38 @@
+{% extends "erp/base_print.html" %}
+
+{% block page_title %}{{ block.super }} - Project Preview & Print{% endblock %}
+
+{% block content %}
+    <h1>Project Preset: {{ preset.title }}</h1>
+    <small>Date of generation: {% now "jS F Y, H:i" %}</small>
+    <hr>
+    <h2>Project Preset Data</h2>
+    <table class="rows">
+        <tr><td>Business Challenge</td><td>{{ preset.challenge }}</td></tr>
+        <tr><td>Service</td><td>{{ preset.service }}</td></tr>
+        <tr><td>Industry</td><td>{{ preset.industry }}</td></tr>
+    </table>
+    <h2>Technical Requirements</h2>
+    {% if reqs %}
+        <table class="rows">
+            <thead>
+                <tr>
+                    <th class="span1 ta_cm">#</th>
+                    <th class="span3 ta_cm">Skill</th>
+                    <th class="span8 ta_cm">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for req in reqs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ req.skill }}</td>
+                    <td>{% if req.desc %}{{ req.desc }}{% else %}&mdash;{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>The list of project preset technical requirements is empty.</p>
+    {% endif %}
+{% endblock %}

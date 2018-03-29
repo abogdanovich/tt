@@ -1,0 +1,114 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Project View{% endblock %}
+
+{% block jquery_ready %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project View&emsp;
+        <div class="btn-group">
+            {% permission cv 10 %}{# view project data #}<a class="btn" href="{% url erp_projects %}"><i class="icon-backward"></i> Back</a>{% endpermission %}
+            <a class="btn" href="{% url erp_project_print prj_id=project.id %}" target="_blank"><i class="icon-print"></i> Prewiew & Print</a>
+            {% permission cv 14 %}{# make copy #}<a class="btn btn-success" href="{% url erp_project_copy prj_id=project.id %}"><i class="icon-file"></i> Make Copy</a>{% endpermission %}
+            {% permission cv 26 %}{# manage presets #}<a class="btn btn-success" href="{% url erp_project_presets_add_from_project prj_id=project.id %}"><i class="icon-hdd"></i> Save as Preset</a>{% endpermission %}
+        </div>
+    </h1>
+    <div style="margin-top: 1em;">
+        {% permission cv 11 %}
+            <h2>Customer Data</h2>
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <tr><td class="span4">Customer</td><td>{{ project.customer }}</td></tr>
+                <tr><td>Benefits for Customer</td><td>{{ project.benefits }}</td></tr>
+                <tr><td>Customer's feedback</td><td>{{ project.feedback }}</td></tr>
+            </table>
+        {% endpermission %}
+        <h2>Project Data{% permission cv 15 %}&emsp;<a href="{% url erp_project_mod prj_id=project.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}</h2>
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <tr class="muted"><td class="span4">Preset</td><td>{{ project.preset|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td class="span4">Title</td><td>{{ project.title }}</td></tr>
+            <tr><td>Business Challenge</td><td>{{ project.challenge }}</td></tr>
+            <tr><td>Service</td><td>{{ project.service }}</td></tr>
+            <tr><td>Industry</td><td>{{ project.industry }}</td></tr>
+            <tr><td>Total Time for Development <small class="muted">(h/d)</small></td><td>{{ project.dev_time }}/{% to_days project.dev_time %}</td></tr>
+            <tr><td>Start Date</td><td>{{ project.date_start|default_if_none:"&mdash;" }}</td></tr>
+            <tr><td>Finish Date</td><td>{{ project.date_finish|default_if_none:"&mdash;" }}</td></tr>
+            {% comment %}<tr><td>Is Pause</td><td>{{ project.is_pause }}</td></tr>{% endcomment %}
+        </table>
+        {% permission cv 16 %}
+            <h2>Technical Requirements&emsp;<span class="btn-group">
+            <a href="{% url erp_project_add_req prj_id=project.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+            {% if reqs %}<a href="{% url erp_project_mod_req prj_id=project.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endif %}</span></h2>
+            <p class="muted"><small>For add requirements to this list or delete theirs from here click "Add" button.<br>
+            For edit description text of project requirements click "Edit" button.</small></p>
+            {% not_permission %}
+            <h2>Technical Requirements</h2>
+            {% endpermission %}
+        {% if reqs %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Skill</th>
+                        <th class="span8">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in reqs %}
+                    <tr{% if not req.desc %} class="warning" title="empty requirement"{% endif %}>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ req.skill }}</td>
+                        <td>{% if req.desc %}{{ req.desc }}{% else %}&mdash;{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">The list of project technical requirements is empty. Add one or more Requirements to this project.</p>
+        {% endif %}
+        <h2>Work Group{% permission cv 19 %}&emsp;<a href="{% url erp_project_mod_wg prj_id=project.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}</h2>
+        {% if wg %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span2">Employee</th>
+                        <th class="span5">Role/Description</th>
+                        <th class="span2">Start Date</th>
+                        <th class="span2">Finish Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for emp in wg %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{% permission cv 40 %}<a href="{% url erp_cv cv_id=emp.cv.id %}" title="Click to view CV">{{ emp.cv }}</a>{% not_permission %}{{ emp.cv }}{% endpermission %}<br><small class="muted">({{ emp.cv.position }})</small></td>
+                        <td>{{ emp.role }}<br><small class="muted">{{ emp.desc }}</small></td>
+                        <td>{% if emp.date_start %}{{ emp.date_start }}{% else %}&mdash;{% endif %}</td>
+                        <td>{% if emp.date_finish %}{{ emp.date_finish }}{% else %}&mdash;{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-error"><strong>Warning!!!</strong> The list of employees for current project is empty yet. Please, add one or more employees to current project.</p>
+        {% endif %}
+        <h2>Screenshots{% permission cv 17 %}&emsp;<a href="{% url erp_project_mod_ss prj_id=project.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}</h2>
+        {% if sss %}
+            <ul class="thumbnails">
+                {% for ss in sss %}
+                <li class="span2">
+                    <div class="thumbnail">
+                        <img src="{{ ss.image.url }}"><br><small class="muted">{{ ss.desc }}</small>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="alert alert-warning">The screenshot list is empty. Please, add one or more screenshots.</p>
+        {% endif %}
+    </div>
+    {% permission cv 15 %}<div><a class="btn" href="{% url erp_projects %}"><i class="icon-backward"></i> Back</a></div>{% endpermission %}
+{% endblock %}

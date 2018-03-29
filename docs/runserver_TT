@@ -1,0 +1,4 @@
+cd /home/dmorozov/Projects/tt/
+python manage.py runserver
+
+

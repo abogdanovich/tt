@@ -1,0 +1,16 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit FL{% endblock %}
+
+{% block base_content %}
+    <h1>{% ifequal op 'add' %}Add a New Position{% endifequal %}{% ifequal op 'mod' %}Edit data of the Current Position{% endifequal %}{% ifequal op 'del' %}Delete Current Position{% endifequal %}</h1>
+    <form action="{% ifequal op 'add' %}{% url erp_add_position %}{% else %}{% url erp_mod_position pos_id=pos_mform.instance.id %}{% endifequal %}" method="POST">
+        {% csrf_token %}
+        <p>{{ pos_mform.name.label }}{{ pos_mform.name }}<br>
+            <small class="muted">{{ pos_mform.name.help_text }}</small>{{ pos_mform.errors }}
+        </p>
+        <input type="hidden" name="stage" value="validate">
+        <a class="btn" href="{% url erp_positions %}">Back</a>&emsp;
+        <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,576 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Загруженность на проектах{% endblock %}
+
+{% block projects %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+    <script type="text/javascript" >
+        var allUsers = [];
+
+        {% for user in users_ %}
+            allUsers[{{user.id}}] = {
+                "id": "{{user.id}}",
+                "name": "{{user.name}}",
+                "surname": "{{user.surname}}",
+                "order": "{{user.order}}",
+            };
+        {% endfor %}
+
+        var allUsersByOrder = [];
+        {% for user in users_ %}
+            allUsersByOrder[{{user.order}}] = {
+                "id": "{{user.id}}",
+                "name": "{{user.name}}",
+                "surname": "{{user.surname}}",
+                "order": "{{user.order}}",
+            };
+        {% endfor %}
+
+        var notAppliedOnProjectEmployee = [];
+        {% for user in notAppliedOnProjectEmployee %}
+            notAppliedOnProjectEmployee[{{user.order}}] = {
+                "userId": "{{user.id}}",
+                "order": "{{user.order}}",
+            }
+        {% endfor %}
+
+        var l = DD('l');
+        l(notAppliedOnProjectEmployee, 'notAppliedOnProjectEmployee');
+
+    </script>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Открытые проекты</a></li>
+            <li><a href="#tabs-2">Создание и закрытие проектов</a></li>
+            <li><a href="#tabs-3">Закрытые проекты</a></li>
+        </ul>
+
+        <div id="tabs-1" style="color: #0f0f0f;">
+            <div style="padding:10px; width:100%">
+                <h4>Назначить сотрудника на проект</h4>
+                <table >
+                    <tr>
+                        <td><label for="select_project">Проект</label></td>
+                        <td><label for="select_dep">Отдел</label></td>
+                        <td><label for="select_role">Роль</label></td>
+                        <td><label for="select_user">Ф.И.О.</label></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select size="1" id ="select_project" onchange="Dajaxice.timecard.updatecombo1(Dajax.process,{'select_project':this.value,'d2':dep_area.innerHTML,'d3':user_area.innerHTML});" >
+                                <option selected="selected" disabled="disabled">Выберите проект...</option>
+                                {% for project in projects %}
+                                    {% if project.project_opened %}
+                                        <option value="{{project.id}}">{{ project.project_name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select size="1" id="select_dep" onchange="Dajaxice.timecard.updatecombo2(Dajax.process, {'select_dep':this.value});" >
+                                <option selected="selected" disabled="disabled">Выберите отдел...</option>
+                                {% for dep in deps%}
+                                    <option value = "{{dep}}">{{dep}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select size="1" id="select_role" onchange="Dajaxice.timecard.updatecombo6(Dajax.process,{'select_role':this.value, 'd1':project_area.innerHTML,'d2':dep_area.innerHTML, 'd3':user_area.innerHTML});" >
+                                <option selected="selected" disabled="disabled">Выберите роль</option>
+                                {% for role in rolelist %}
+                                    <option value = "{{ role.id }}">{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select size="1" id="select_user" onchange="Dajaxice.timecard.updatecombo3(Dajax.process,{'select_user':this.value,'d1':project_area.innerHTML,'d2':dep_area.innerHTML, 'd3':role_area.innerHTML});" >
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div id = "project_area"  style="background:#CCFF99"></div></td>
+                        <td><div id = "dep_area" style="background:#CCFF99"></div></td>
+                        <td><div id = "role_area" style="background:#CCFF99"></div></td>
+                        <td><div id = "user_area" style="background:#CCFF99"></div></td>
+                    </tr>
+                    <tr>
+                        <td><br/>
+                            <input type='button' value = 'Назначить' id = 'assignment_button' disabled="disabled" onclick="Dajaxice.timecard.assign_project (Dajax.process, {'uid':select_user.value, 'pid':select_project.value, 'me':{{me.id}}, 'role':select_role.value });" /></td>
+                        <td><br/><div id = "assignment_area"></div></td>
+                        <td></td>
+                    </tr>
+                </table>
+                <br/><br/>
+                <h4>Снять с проекта сотрудника</h4>
+                <table>
+                    <tr>
+                        <td>
+                            <select size="1" id ="select_project_unassign" onchange="Dajaxice.timecard.updatecombo4(Dajax.process, {'select_project': this.value});">
+                                <option selected="selected" disabled="disabled">Выберите проект...</option>
+                                {% for project in assigned_projects %}
+                                    <option value="{{project.id}}">	{{project.project_name}} </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select size ="1" id ="select_user_unassign" onchange = "Dajaxice.timecard.updatecombo5(Dajax.process, {'select_user': this.value, 'd1':project_area_unassign.innerHTML});" >
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div id = "project_area_unassign"  style="background:#CCFF99"></div></td>
+                        <td><div id = "user_area_unassign"  style="background:#CCFF99"></div></td>
+                    </tr>
+                    <tr>
+                        <td
+                                ><br/><input
+                                type='button'
+                                value = 'Снять'
+                                id = 'unassignment_button'
+                                disabled
+                                onclick="Dajaxice.timecard.unassign_project (Dajax.process, {'uid':select_user_unassign.value, 'pid':select_project_unassign.value, 'me':{{me.id}} });"
+                                /></td>
+                        <td><br/><div id = "unassignment_area"></div></td>
+                    </tr>
+                </table>
+                <br/><br/><br/>
+
+
+                Статистика по проектам
+                <input type='hidden' id='vsh' value="0"/>
+
+                {% for project in projects %}
+                    {% if project.project_opened %}
+                        <br/><br/>
+                        {{project.project_name}}&nbsp;&nbsp;&nbsp;<a
+                    style="color: #2970A6"
+                    onclick="Dajaxice.timecard.show_detailed_statistics(Dajax.process, {'pid':{{project.id}}, 'vsh': $('input#vsh').attr('value') } );"
+                    ><img src="{{STATIC_URL}}/css/images/button_detail.png"
+                    /></a>
+
+
+                        <div id = "project_div_{{project.id}}" hidden>
+                            <table style = "background:#DAF0DC; width:100%">
+                                <tr>
+                                    <td style>
+                                        <br/>
+                                        <strong>{{project.project_name}}</strong>
+                                        <br/><br/>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <em>Над проектом сейчас работают:</em><br/><br/>
+                                        {% for thread in threads %}
+                                            {% if not thread.who_unassigned and thread.project_id == project.id %}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.user_name_surname}} ({% for role in rolelist %}{% if role.id == thread.user_role %}{{ role.name }}{% endif %}{% endfor %})</strong> <br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td><em>Сотрудника на проект назначил:</em><br/><br/>
+                                        {% for thread in threads %}
+                                            {% if not thread.who_unassigned and thread.project_id == project.id %}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_assigned}} </strong><br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <br/><em>Над проектом работали ранее<br/>(данные по последнему назначению):</em><br/><br/>
+                                        {% for thread in threads %}
+                                            {% if thread.who_unassigned and thread.project_id == project.id %}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.user_name_surname}} ({% for role in rolelist %}{% if role.id == thread.user_role %}{{ role.name }}{% endif %}{% endfor %})</strong> <br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td><br/><em>Сотрудника на проект<br/> назначил:</em><br/><br/>
+                                        {% for thread in threads %}
+                                            {% if thread.who_unassigned and thread.project_id == project.id %}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_assigned}} </strong><br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <br/><em>С проекта сотрудника<br/> снял:</em><br/><br/>
+                                        {% for thread in threads %}
+                                            {% if thread.who_unassigned and thread.project_id == project.id %}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_unassigned}} </strong><br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><br/><br/> <font color="#CC0000"> Всего часов затрачено на проект<br/>согласно недельным отчетам:
+                                        {% for key, value in spent_hours_per_all_projects.items %}{% if key == project.project_name%}
+                                            &nbsp;{{value}}
+                                        {% endif %}{% endfor %} </font>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <br/>
+                            Индивидуальные временные затраты
+                            <table id = "individual_hours_table_for_{{project.id}}" style = "width:100%">
+                            </table><br/><br/>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div id="tabs-2" style="color: #0f0f0f;" >
+<!--
+            <input type="text" id="testfield"/>
+            <input type="button" onclick="Dajaxice.timecard.dajaxice_example(my_callback, {'testfield': $('#testfield').val() })" value="Get message from server!">
+            <script type="text/javascript" >
+                function my_callback(data){
+                    console.log(data);
+                }
+            </script>
+-->
+            <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+                <tr><td>
+                    <div style="padding: 10px;">
+                        <table width="100%" cellpadding="1" cellspacing="1">
+                            <tr bgcolor="#E5F0FF">
+                                <td>
+                                    <form id="main_form" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" class="project_input" name="project_name" id="project_name" value="[НАЗВАНИЕ ПРОЕКТА]">
+                                        Название проекта<span class="red_color">*</span><br/>
+                                        <input type="text" class="project_input" name="project_desc" id="project_desc" value="">
+                                        Краткое описание проекта<br/>
+                                        <input type="text" class="project_input" name="project_desc_for_customer" id="project_desc_for_customer" value="">
+                                        Описание проекта для клиента [Benefits for Customer]<br/>
+
+                                        <select class="project_input" name="customer" id="customer" >
+                                            {% for customer in listCustomers %}
+                                                <option
+                                                        value="{{customer.customerId}}"
+                                                        id="customer_{{customer.customerId}}"
+                                                >{{customer.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        Заказчик [Customer]<span class="red_color">*</span><br/>
+
+
+                                        <input type="text" class="project_input" name="customer_feedback" id="customer_feedback" value="">
+                                        Customer's feedback<br/>
+                                        <input type="text" class="project_input" name="service" id="service" value="">
+                                        Сервис<br/>
+                                        <input type="text" class="project_input" name="industry" id="industry" value="">
+                                        Industry<br/>
+                                        <input type="text" class="project_input" name="solution_highlight" id="solution_highlight" value="">
+                                        Solution highlight<br/>
+                                        <input type="text" class="project_input" name="development_tools_and_technologies" id="development_tools_and_technologies" value="">
+                                        Development Tools and technologies<br/>
+                                        <input type="text" class="project_input" name="development_time" id="development_time" value="">
+                                        Development Time (in hours)<br/>
+
+
+
+                                        <input type="text" class="project_input" name="start_date" id="start_date" value="{{date}}">
+                                        Start Date<br/>
+                                        <input type="text" class="project_input" name="finish_date" id="finish_date" value="">
+                                        Finish Date<br/>
+                                        <input type="checkbox" class="project_input" name="project_is_in_pause" id="project_is_in_pause" >
+                                        Project is in pause<br/>
+                                        <input
+                                                type="hidden"
+                                                name="project_appended_employees"
+                                                id="project_appended_employee"
+                                                value="{{projectAppendedEmployee.project_appended_employee}}"
+                                        >
+
+                                        <div id="div_add_employee_to_project" >
+                                            <div id="div_select_can_be_applied_on_project">
+                                                <select name="employee" id="employee">
+                                                    {% for user in notAppliedOnProjectEmployee %}
+                                                        <option
+                                                                value="{{user.id}}"
+                                                                id="employee_{{user.id}}"
+                                                        >{{user.name}}&nbsp;{{user.surname}}</option>
+                                                    {% endfor %}
+                                                </select>
+
+                                            <div id="msg_error_apply_user"></div>
+                                            <div class="cl"></div>
+                                            </div>
+                                            <div id="div_role_on_project"
+                                                    >&nbsp;&nbsp; что выполняет на проекте &nbsp;&nbsp;<input type="text" id="role_on_project"
+                                            /></div>
+                                            <div id="div_apply_employee_to_project">
+                                                <a
+                                                    id="apply_employee_to_project"
+                                                >&nbsp;&nbsp; Добавить &nbsp;&nbsp;</a
+                                                >
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <br/>
+                                        <div id="div_applied_employees">
+                                            <ul id="applied_employees">
+                                                {% for appliedEmployee in appliedEmployees %}
+
+                                                    <li
+                                                            class="li_appended_employee"
+                                                            id="li_appended_employee{{appliedEmployee.id}}"
+                                                            ><div class="div_applied_employee_info"
+                                                            ><div class="div_applied_employee_str"
+                                                                >{{appliedEmployee.name}}&nbsp;{{appliedEmployee.surname}}&nbsp;&nbsp;&nbsp;</div
+
+
+                                                            ><input
+                                                                class="inp_role_on_project"
+                                                                id="inp_role_on_project{{appliedEmployee.id}}"
+                                                                type="text"
+                                                                value="{{appliedEmployee.roleOnProject}}"
+                                                            /></div
+                                                            ><div
+                                                                class="div_button_refresh_role"
+                                                                id="div_button_refresh_role{{appliedEmployee.id}}"
+                                                            ><img src="/static/images/refresh_small.png" /></div
+
+
+
+
+
+                                                            ><div
+                                                                class="div_remove_from_appended"
+                                                                id="div_remove_from_appended{{appliedEmployee.id}}"
+                                                            ><img src="/static/images/cross.png"></div><div class="cl"></div></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        <!--
+                                        <div>
+                                            <input type="file" name="files[]" id="fileupload" />
+                                            <div id="dropzone" class="fade well">Drop files here</div>
+                                        </div>
+                                        -->
+                                        <input
+                                                type="button"
+                                                name="add_new_project"
+                                                id="add_new_project"
+                                                onclick="Dajaxice.timecard.add_new_project(Dajax.process,
+                                                {
+                                                    'project_name': $('#project_name').val(),
+                                                    'project_desc': $('#project_desc').val(),
+                                                    'project_desc_for_customer': $('#project_desc_for_customer').val(),
+                                                    'customer': $('#customer').val(),
+                                                    'customer_feedback': $('#customer_feedback').val(),
+                                                    'service': $('#service').val(),
+                                                    'industry': $('#industry').val(),
+                                                    'solution_highlight': $('#solution_highlight').val(),
+                                                    'development_tools_and_technologies': $('#development_tools_and_technologies').val(),
+                                                    'development_time': $('#development_time').val(),
+                                                    'start_date': $('#start_date').val(),
+                                                    'finish_date': $('#finish_date').val(),
+                                                    'project_is_in_pause': $('#project_is_in_pause').val(),
+                                                }
+                                                )"
+
+
+
+
+
+
+
+
+
+
+
+                                                value="Добавить проект"
+                                        />
+                                    </form>
+
+
+                                    <div id="wrapper_upl_div" >
+                                    <div id="upl_div" >
+                                        <form id="upload" method="post" action="/projects-create_new-multiuploader/" enctype="multipart/form-data">
+                                            <div id="drop">
+                                                Drop Files Here
+                                                <a>Browse</a>
+                                                <input type="file" name="uploaded_file" multiple />
+                                            </div>
+                                            <ul id="___ul_uploaded_files">
+                                                <!-- The file uploads will be shown here -->
+
+
+
+
+
+
+                                                {% for file in files %}
+                                                <li class="">
+                                                    <div style="display:inline;width:48px;height:48px;">
+                                                        <canvas width="48" height="48px"></canvas>
+                                                        <input
+                                                                type="text"
+                                                                value="0"
+                                                                data-width="48"
+                                                                data-height="48"
+                                                                data-fgcolor="#0788a5"
+                                                                data-readonly="1"
+                                                                data-bgcolor="#3e4043"
+                                                                readonly="readonly"
+                                                                style=" width: 28px;
+                                                                        height: 16px;
+                                                                        position: absolute;
+                                                                        vertical-align: middle;
+                                                                        margin-top: 16px;
+                                                                        margin-left: -38px;
+                                                                        border: 0px;
+                                                                        font-weight: bold;
+                                                                        font-style: normal;
+                                                                        font-variant: normal;
+                                                                        font-size: 9px;
+                                                                        line-height: normal;
+                                                                        font-family: Arial;
+                                                                        text-align: center;
+                                                                        color: rgb(7, 136, 165);
+                                                                        padding: 0px;
+                                                                        -webkit-appearance: none;
+                                                                        background: none;"
+                                                    >
+                                                    </div>
+                                                    <p>{{file.fileName}}<i>{{file.fileName}} KB</i></p>
+                                                    <span></span>
+
+                                                </li>
+                                                {% endfor %}
+
+
+                                            </ul>
+                                        </form>
+                                    </div>
+                                    </div>
+
+
+
+                                    <div id="upl_div_style">
+                                        <a id="send_main_form">Добавить проект</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                    </div>
+                </td></tr>
+            </table>
+            <div id="msg_project"></div>
+            <br/>
+            <div id="msg_area_project_error"></div>
+            <br/>
+            <div id="msg_area_project"></div>
+            <br/>
+            <table class="zebra" width=100%>
+                {% for project in projects %}
+                    {% if project.project_opened %}
+                    <tr>
+                        <td>
+                            <strong>{{ project.project_name }}</strong>   |    <i>{{ project.project_desc }}</i><br/><br/>
+                        </td>
+                        <td>
+                            <a href="#pddp" style="color:#2970A6 " onclick="Dajaxice.timecard.show_project_deletetion_confirmation_form(Dajax.process, {'pid':{{ project.id }}});">закрыть проект</a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            <div id="pddp" style="background: #ffb6c1; text-align: center;"></div>
+        </div>
+        <div id="tabs-3" style="color: #0f0f0f;" >
+            Статистика по закрытым проектам
+            <input type='hidden' id='vsh' value="0"/>
+            {% for project in projects %}
+                {% if not project.project_opened %}
+                    <br/><br/>
+                    {{project.project_name}}&nbsp;&nbsp;&nbsp;<a
+                style="color: #2970A6"
+                onclick="console.log('Dajax.process[ ' + Dajax.process + ' ] '); Dajaxice.timecard.show_detailed_statistics(Dajax.process, {'pid':{{project.id}}, 'vsh':vsh.value});"
+                ><img src="{{STATIC_URL}}/css/images/button_detail.png"
+                /></a>
+                    <div id = "project_div_{{project.id}}" hidden>
+                        <table style = "background:#DAF0DC; width:100%">
+                            <tr>
+                                <td style>
+                                    <br/>
+                                    <strong>{{project.project_name}}</strong>
+                                    <br/><br/>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <em>Над проектом сейчас работают:</em><br/><br/>
+                                    {% for thread in threads %}
+                                        {% if not thread.who_unassigned and thread.project_id == project.id %}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.user_name_surname}} ({% for role in rolelist %}{% if role.id == thread.user_role %}{{ role.name }}{% endif %}{% endfor %})</strong> <br/>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td><em>Сотрудника на проект назначил:</em><br/><br/>
+                                    {% for thread in threads %}
+                                        {% if not thread.who_unassigned and thread.project_id == project.id %}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_assigned}} </strong><br/>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <br/><em>Над проектом работали ранее<br/>(данные по последнему назначению):</em><br/><br/>
+                                    {% for thread in threads %}
+                                        {% if thread.who_unassigned and thread.project_id == project.id %}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.user_name_surname}} ({% for role in rolelist %}{% if role.id == thread.user_role %}{{ role.name }}{% endif %}{% endfor %})</strong> <br/>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td><br/><em>Сотрудника на проект<br/> назначил:</em><br/><br/>
+                                    {% for thread in threads %}
+                                        {% if thread.who_unassigned and thread.project_id == project.id %}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_assigned}} </strong><br/>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <br/><em>С проекта сотрудника<br/> снял:</em><br/><br/>
+                                    {% for thread in threads %}
+                                        {% if thread.who_unassigned and thread.project_id == project.id %}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<strong>{{thread.who_unassigned}} </strong><br/>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><br/><br/> <font color="#CC0000"> Всего часов затрачено на проект<br/>согласно недельным отчетам:
+                                    {% for key, value in spent_hours_per_all_projects.items %}{% if key == project.project_name%}
+                                        &nbsp;{{value}}
+                                    {% endif %}{% endfor %} </font>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        Индивидуальные временные затраты
+                        <table id = "individual_hours_table_for_{{project.id}}" style = "width:100%">
+                        </table><br/><br/>
+                    </div>
+
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock%}

@@ -1,0 +1,70 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit FL{% endblock %}
+
+{% block jquery_ready %}
+    var tbl_fl_dom = document.getElementById('tbl_fl');
+    var total_forms = $('input#id_form-TOTAL_FORMS');
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= fl-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= fl-][name $= -DELETE]").removeAttr('checked');});
+    $("a#ctrl_add").click(function() {
+        var old = total_forms.val();
+        total_forms.val(Number(total_forms.val())+1);
+        var row = tbl_skills_dom.insertRow(total_forms.val());
+        var cell1 = row.insertCell(0);
+        cell1.innerHTML = total_forms.val() + '<input type="hidden" name="form-'+old+'-id" id="id_form-'+old+'-id">';
+        var cell2 = row.insertCell(1);
+        cell2.innerHTML = '<input id="id_form-'+old+'-name" type="text" name="form-'+old+'-name" value="" maxlength="50">';
+        var cell3 = row.insertCell(2);
+        cell3.innerHTML = '<textarea id="id_form-'+old+'-desc" rows="3" cols="100" name="form-'+old+'-desc" class="span6"></textarea>';
+        var cell4 = row.insertCell(3);
+        cell4.innerHTML = '<input type="checkbox" name="form-'+old+'-on_main" id="id_form-'+old+'-on_main">';
+        var cell5 = row.insertCell(4);
+        cell5.innerHTML = '<input type="checkbox" name="form-'+old+'-DELETE" id="id_form-'+old+'-DELETE">';
+    });
+{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Foreign Languages skills  of {{ cvfl_iforms.instance.name }} {{ cvfl_iforms.instance.surname }}</h1>
+    <form action="{% url erp_cv_mod_fl cv_id=cvfl_iforms.instance.id %}" method="POST">
+        {% csrf_token %}
+        {{ cvfl_iforms.management_form }}
+        <table id="tbl_fl" class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+        {% for cvfl_form in cvfl_iforms %}
+            {% if forloop.first %}
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span4">{{ cvfl_form.language.label }}</th>
+                    <th class="span3">{{ cvfl_form.spoken.label }}</th>
+                    <th class="span3">{{ cvfl_form.written.label }}</th>
+                    <th class="span1">{{ cvfl_form.DELETE.label }}<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" href="#" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" href="#" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% endif %}
+                <tr class="control-group{% if cvfl_form.errors %} error{% endif %}">
+                    <td>{{ forloop.counter }}{{ cvfl_form.id }}{{ cvfl_form.id.errors }}</td>
+                    <td>{{ cvfl_form.language }}{{ cvfl_form.language.errors }}</td>
+                    <td>{{ cvfl_form.spoken }}{{ cvfl_form.spoken.errors }}</td>
+                    <td>{{ cvfl_form.written }}{{ cvfl_form.written.errors }}</td>
+                    <td>{{ cvfl_form.DELETE }}</td>
+                </tr>
+            {% if forloop.last %}
+            </tbody>
+            {% endif %}
+        {% endfor %}
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=cvfl_iforms.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            {% comment %}<a id="ctrl_add" class="btn"><i class="icon-plus"></i> Add</a>{% endcomment %}
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

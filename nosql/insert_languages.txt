@@ -1,0 +1,42 @@
+
+
+db.timecard_languages.remove({});
+
+db.timecard_languages.insert({"name": "китайский"});
+db.timecard_languages.insert({"name": "испанский"});
+db.timecard_languages.insert({"name": "английский"});
+db.timecard_languages.insert({"name": "хинди"});
+db.timecard_languages.insert({"name": "арабский"});
+db.timecard_languages.insert({"name": "португальский"});
+db.timecard_languages.insert({"name": "бенгальский"});
+db.timecard_languages.insert({"name": "русский"});
+db.timecard_languages.insert({"name": "японский"});
+db.timecard_languages.insert({"name": "немецкий"});
+db.timecard_languages.insert({"name": "французский"});
+db.timecard_languages.insert({"name": "тамильский"});
+db.timecard_languages.insert({"name": "корейский"});
+db.timecard_languages.insert({"name": "урду"});
+db.timecard_languages.insert({"name": "итальянский"});
+db.timecard_languages.insert({"name": "малайский"});
+db.timecard_languages.insert({"name": "турецкий"});
+db.timecard_languages.insert({"name": "персидский"});
+db.timecard_languages.insert({"name": "польский"});
+db.timecard_languages.insert({"name": "нидерландский"});
+
+db.timecard_languages.find({});
+
+
+
+
+
+db.timecard_users_languages.remove({});
+db.timecard_users_languages.find({});
+
+
+
+
+db.timecard_users_languages.find({language_id: ObjectId("53f5fd2b92e60411d40bc69a")});
+
+
+
+

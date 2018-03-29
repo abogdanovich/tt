@@ -1,0 +1,62 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit FL{% endblock %}
+
+{% block jquery_ready %}
+    var tbl_contact_dom = document.getElementById('tbl_contact');
+    var total_forms = $('input#id_contacts-TOTAL_FORMS');
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= contacts-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= contacts-][name $= -DELETE]").removeAttr('checked');});
+    $("a#ctrl_add").click(function() {
+        var old = total_forms.val();
+        total_forms.val(Number(total_forms.val())+1);
+        var row = tbl_contact_dom.insertRow(total_forms.val());
+        var cell1 = row.insertCell(0);
+        cell1.innerHTML = total_forms.val() + '<input type="hidden" name="contacts-'+old+'-id" id="id_contacts-'+old+'-id">';
+        var cell2 = row.insertCell(1);
+        cell2.innerHTML = '<input id="id_contacts-'+old+'-name" type="text" class="span4" name="contacts-'+old+'-name" value="" maxlength="50">';
+        var cell3 = row.insertCell(2);
+        cell3.innerHTML = '<input id="id_contacts-'+old+'-val" type="text" class="span6" name="contacts-'+old+'-val" value="" maxlength="100">';
+        var cell4 = row.insertCell(3);
+        cell4.innerHTML = '<input type="checkbox" name="contacts-'+old+'-DELETE" id="id_contacts-'+old+'-DELETE">';
+    });
+{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Contact Info of {{ cv_contact_iforms.instance.name }} {{ cv_contact_iforms.instance.surname }}</h1>
+    <form action="{% url erp_cv_mod_contacts cv_id=cv_contact_iforms.instance.id %}" method="POST">
+        {% csrf_token %}
+        {{ cv_contact_iforms.management_form }}
+        <table id="tbl_contact" class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span4">Contact Name</th>
+                    <th class="span6">Contact Value</th>
+                    <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" href="#" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" href="#" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            {% for contact_form in cv_contact_iforms %}
+            <tbody>
+                <tr class="control-group{% if contact_form.errors %} error{% endif %}">
+                    <td>{{ forloop.counter }}{{ contact_form.id }}{{ contact_form.id.errors }}</td>
+                    <td>{{ contact_form.name }}{{ contact_form.name.errors }}</td>
+                    <td>{{ contact_form.val }}{{ contact_form.val.errors }}</td>
+                    <td>{{ contact_form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=cv_contact_iforms.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <a id="ctrl_add" class="btn"><i class="icon-plus"></i> Add</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

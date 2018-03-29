@@ -1,0 +1,73 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit Certificate{% endblock %}
+
+{% block jquery_ready %}
+    $("input[id ^= id_][id $= _date]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= screenshots-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= screenshots-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    {% ifnotequal op 'del' %}
+        <h1>{% ifequal op 'add' %}Add a New Certificate{% endifequal %}{% ifequal op 'mod' %}Edit data of the Current Certificate{% endifequal %}
+        {% ifequal op 'mod' %}
+            &emsp;<div class="btn-group">
+                <a href="{% url erp_cv_certificate_print cv_id=view_cv.id cert_id=cert_mform.instance.id %}" class="btn" title="Preview & Print" target="_blank"><i class="icon-print"></i> Print</a>
+                <a href="{% url erp_cv_certificate_del cv_id=view_cv.id cert_id=cert_mform.instance.id %}" class="btn btn-warning" title="Delete current certificate"><i class="icon-warning-sign"></i> Delete</a>
+            </div>{% endifequal %}
+        </h1>
+        <form action="{% ifequal op 'add' %}{% url erp_cv_certificates_add cv_id=view_cv.id %}{% endifequal %}{% ifequal op 'mod' %}{% url erp_cv_certificate_mod cv_id=cv.id cert_id=cert_mform.instance.id %}{% endifequal %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <tbody>
+                    <tr class="control-group{% if cert_mform.title.errors %} error{% endif %}">
+                        <td class="span3">{{ cert_mform.title.label_tag }}</td>
+                        <td class="span 9">{{ cert_mform.title }}{{ cert_mform.title.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if cert_mform.date.errors %} error{% endif %}">
+                        <td class="span3">{{ cert_mform.date.label_tag }}</td>
+                        <td class="span 9">{{ cert_mform.date }}{{ cert_mform.date.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if cert_mform.desc.errors %} error{% endif %}">
+                        <td class="span3">{{ cert_mform.desc.label_tag }}</td>
+                        <td class="span 9">{{ cert_mform.desc }}{{ cert_mform.desc.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if cert_mform.image.errors %} error{% endif %}">
+                        <td class="span3">{{ cert_mform.image.label_tag }}</td>
+                        <td class="span 9">{{ cert_mform.image }}{{ cert_mform.image.errors }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {{ cert_mform.cv }}
+            {% ifequal op 'mod' %}{{ cert_mform.id }}{% endifequal %}
+            <input type="hidden" name="stage" value="validate">
+            <div class="btn-group">
+                <a href="{% url erp_cv cv_id=view_cv.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+                <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+            </div>
+        </form>
+    {% else %}
+        <h1>Delete data of the Current Certificate</h1>
+        <p class="alert alert-block alert-warning">Do you really wand to delete current Certificate?<br>
+        <strong>WARNING!!!</strong> This operation won`t be revert.</p>
+        <dl class="dl-horizontal">
+            <dt>Certificate:</dt>
+            <dd>{{ cert_mform.instance.title }}</dd>
+            <dt>Description:</dt>
+            <dd>{{ cert_mform.instance.desc }}</dd>
+            {% if cert_mform.instance.image %}
+                <dt>Image:</dt>
+                <dd><img src="{{ cert_mform.instance.image.url }}"></dd>
+            {% endif %}
+        </dl>
+        <form action="{% url erp_cv_certificate_del cv_id=view_cv.id cert_id=cert_mform.instance.id %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="stage" value="confirm">
+            <div class="btn-group">
+                <a href="{% url erp_cv_certificate_mod cv_id=view_cv.id cert_id=cert_mform.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+                <button class="btn btn-warning" type="submit"><i class="icon-warning-sign"></i> Confirm</button>
+            </div>
+        </form>
+    {% endifnotequal %}
+{% endblock %}

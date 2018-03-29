@@ -1,0 +1,2 @@
+db.project_appended_employee_role.update({}, {$unset: {project_name: ""}}, {multi: true})
+

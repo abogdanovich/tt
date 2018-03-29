@@ -1,0 +1,78 @@
+<div class="widget">
+<table width="220" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+<tr><td>
+<div style="padding: 10px;">
+<span id="calendar">
+<table width="100%" >
+<tr>
+{% for day in headers %}
+<th>{{ day|date:"D"|slice:":2" }}</th>
+{% endfor %}
+</tr>
+    {% for week in calendar %}
+        <tr>
+        {% for day in week %}
+	    
+	    {% if day.in_month %}
+		
+		    {% if day.hb %}
+			{% if day.today %}
+			<td align="right">
+			<div style="padding: 0px; border: 1px groove black;">
+			<a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}"><img src="{{ static_url }}css/images/hb_small_icon.png">{{ day.day|date:"j" }}</a>
+			</div>
+			{% else %}
+			    {% if day.event %}
+			    
+				<td bgcolor="#FF6633" align="right">
+				<a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}"><img src="{{ static_url }}css/images/hb_small_icon.png">{{ day.day|date:"j" }}</a>
+			    
+			    {% else %}
+				<td align="right"> 
+				<a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}"><img src="{{ static_url }}css/images/hb_small_icon.png">{{ day.day|date:"j" }}</a>
+			    {% endif %}
+			
+		    {% endif %}
+		    
+		    {% else %}
+			{% if day.event %}
+			    {% if day.today %}
+
+				    <td bgcolor="#FF6633" align="right">
+				    <div style="padding: 0px; border: 1px groove black;">
+				    <a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}">{{ day.day|date:"j" }}</a>
+				    </div>
+
+			    {% else %}
+			    <td bgcolor="#FF6633" align="right">
+			    <a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}">{{ day.day|date:"j" }}</a>
+			    {% endif %}
+			{% else %}
+			    {% if day.today %}
+			    <td bgcolor="white" align="right">
+			    <div style="padding: 0px; border: 1px groove black;">
+			    <a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}">{{ day.day|date:"j" }}</a>
+			    </div>
+			    {% else %}
+			    <td bgcolor="white" align="right">
+			    <a href="/events/?day_events={{ month }}/{{ day.day|date:"d" }}">{{ day.day|date:"j" }}</a>
+			    {% endif %}
+			{% endif %}
+	
+		{% endif %}
+		
+	    {% else %}
+		<td bgcolor="white" align="right">
+	    
+	    {% endif %}
+        </td>
+    {% endfor %}
+
+</tr>
+{% endfor %}
+</table>
+</span>
+</div>
+</td></tr>
+</table>
+</div>

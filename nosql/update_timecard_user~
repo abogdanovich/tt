@@ -1,0 +1,2 @@
+db.timecard_user.update({}, {$set: {can_edit_position_skill: true }}, {multi: true})
+

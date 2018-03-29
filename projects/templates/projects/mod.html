@@ -1,0 +1,58 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Main Page{% endblock %}
+
+{% block jquery_ready %}
+    $("input#id_date_start").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input#id_date_finish").datepicker({ "dateFormat": "yy-mm-dd" });
+{% endblock %}
+
+{% block base_content %}
+    <h1>{% ifequal op 'add' %}Add a New Empty Project{% endifequal %}
+        {% ifequal op 'preset' %}Add a New Project from Preset "{{ preset }}"{% endifequal %}
+        {% ifequal op 'copy' %}Create copy of the Current Project "{{ old_project }}"{% endifequal %}
+        {% ifequal op 'mod' %}Edit data of the Current Project{% endifequal %}
+    </h1>
+    <p class="muted">It`s page is first step for project create. Now You can add main data only.<br>
+    After saving this project You may add to it Technical Requirements, and only after - Employees.<br>
+    For adding this data please click according buttons "Add/Edit" in project view page.<br>
+    Screensots add to project in last step (Note: they don`t requires).
+    </p>
+    <form action="{% ifequal op 'add' %}{% url erp_project_add %}{% endifequal %}{% ifequal op 'preset' %}{% url erp_project_add_preset pst_id=preset.id %}{% endifequal %}{% ifequal op 'copy' %}{% url erp_project_copy prj_id=old_project.id %}{% endifequal %}{% ifequal op 'mod' %}{% url erp_project_mod prj_id=p_mform.instance.id %}{% endifequal %}" method="POST">
+        {% csrf_token %}
+        <h2>Customer</h2>
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <tr><td class="span4">Customer</td><td>
+                <div class="input-append">
+                    {{ p_mform.customer }}
+                    {% permission cv 3 %}<a href="{% url erp_customer_add %}" class="btn btn-primary"><i class="icon-plus"></i> Add</a>{% endpermission %}
+                </div>
+                {{ p_mform.customer.errors }}
+            </td></tr>
+            <tr><td>Benefits for customer</td><td>{{ p_mform.benefits }}{{ p_mform.benefits.errors }}</td></tr>
+            <tr><td>Customer's feedback</td><td>{{ p_mform.feedback }}{{ p_mform.feedback.errors }}</td></tr>
+        </table>
+        <h2>Project Data</h2>
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <tr><td class="span4">Title</td><td>{{ p_mform.title }}{{ p_mform.title.errors }}</td></tr>
+            {% ifequal op 'mod' %}<tr class="muted"><td>Preset</td><td>{{ p_mform.preset }}{{ p_mform.preset.errors }}</td></tr>{% endifequal %}
+            <tr><td>Business Challenge</td><td>{{ p_mform.challenge }}{{ p_mform.challenge.errors }}</td></tr>
+            <tr><td>Service</td><td>{{ p_mform.service }}{{ p_mform.service.errors }}</td></tr>
+            <tr><td>Industry</td><td>{{ p_mform.industry }}{{ p_mform.industry.errors }}</td></tr>
+            <tr><td>Solution</td><td>{{ p_mform.solution }}{{ p_mform.solution.errors }}</td></tr>
+            <tr><td>Total Time for Development</td><td>{{ p_mform.dev_time }}{{ p_mform.dev_time.errors }}</td></tr>
+            <tr><td>Start Date</td><td>{{ p_mform.date_start }}{{ p_mform.date_start.errors }}</td></tr>
+            <tr><td>Finish Date</td><td>{{ p_mform.date_finish }}{{ p_mform.date_finish.errors }}</td></tr>
+            {% comment %}<tr><td>Is Pause</td><td>{{ p_mform.is_pause }}</td></tr>{% endcomment %}
+        </table>
+        {% ifequal op 'mod' %}<input type="hidden" name="project" value="{{ p_mform.instance.id }}">{% endifequal %}
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            {% ifequal op 'mod' %}<a href="{% url erp_project prj_id=p_mform.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>{% endifequal %}
+            {% ifequal op 'copy' %}<a href="{% url erp_project prj_id=old_project.id %}" class="btn"><i class="icon-backward"></i> Back</a>{% endifequal %}
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

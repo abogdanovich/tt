@@ -1,0 +1,48 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - CV List{% endblock %}
+
+{% block jquery_ready %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>List of CV by Filter on Technical Expertise Skills</h1>
+    <h2 class="text-info">{{ skill }} = {{ tag }}</h2>
+    <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+        <thead>
+            <tr>
+                <th class="span1" rowspan="2">#</th>
+                <th class="span2" rowspan="2">Curriculum Vitae</th>
+                <th class="span2" rowspan="2">Position</th>
+                <th class="span4" rowspan="2">{{ skill }}</th>
+                <th class="span3" colspan="3">Projects</th>
+            </tr>
+            <tr>
+                <th class="span1"><span class="badge badge-info" title="prepare state">Prepare</span></th>
+                        <th class="span1"><span class="badge badge-success" title="work state">Work</span></th>
+                        <th class="span1"><span class="badge badge-warning" title="pause state">Pause</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cv in cvs %}
+            <tr class="control-group">
+                <td>{{ forloop.counter }}</td>
+                <td>{% permission cv 40 %}<a href="{% url erp_cv cv_id=cv.id %}" title="view the curriculum vitae">{{ cv.name }} {{ cv.surname }}</a>{% not_permission %}{{ cv.name }} {{ cv.surname }}{% endpermission %}</td>
+                <td>{{ cv.position }}</td>
+                <td>{% for sk in cv.skills.all %}{% ifequal sk.skill skill %}{{ sk.desc }}{% endifequal %}{% endfor %}</td>
+                {% permission cv 40 %}
+                    <td><b class="{% if cv.get_prepare_projects %}text-success{% else %}muted{% endif %}">{{ cv.get_prepare_projects }}</b></td>
+                    <td><b class="{% if cv.get_work_projects %}text-success{% else %}text-error{% endif %}">{{ cv.get_work_projects }}</b></td>
+                    <td><b class="{% if cv.get_pause_projects %}text-warning{% else %}muted{% endif %}">{{ cv.get_pause_projects }}</b></td>
+                {% not_permission %}
+                    <td><span class="muted">&mdash;</span></td>
+                    <td><span class="muted">&mdash;</span></td>
+                    <td><span class="muted">&mdash;</span></td>
+                {% endpermission %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

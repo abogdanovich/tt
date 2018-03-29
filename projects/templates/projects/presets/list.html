@@ -1,0 +1,75 @@
+{% extends "projects/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Presets List{% endblock %}
+
+{% block jquery_ready %}
+    {% permission cv 26 %}
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").removeAttr('checked');});
+    {% endpermission %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Project Presets List</h1>
+    {% if preset_mforms %}
+        <form action="{% url erp_project_presets %}" method="POST">
+        {% csrf_token %}
+        {{ preset_mforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-top: 1em;">
+            <thead>
+            <tr>
+                <th class="span1">#</th>
+                <th class="span3">Preset Title</th>
+                <th class="span2">Business Challenge/<br>Technical Requirements</th>
+                {% permission cv 26 %}
+                <th class="span1">Delete<br>
+                    <span class="btn-group">
+                        <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                        <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                    </span>
+                </th>
+                {% endpermission %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for preset_form in preset_mforms %}
+                <tr>
+                    <td>{{ forloop.counter }}{{ preset_form.id }}</td>
+                    <td><a href="{% url erp_project_preset pst_id=preset_form.instance.id %}" title="edit this preset">{{ preset_form.instance.title }}</a>
+                        {% permission cv 13 %}
+                        <br><a href="{% url erp_project_add_preset pst_id=preset_form.instance.id %}" class="btn btn-success" title="create new projects from this preset"><i class="icon-plus"></i> Create Project</a>
+                        {% endpermission %}
+                    </td>
+                    <td><i>{{ preset_form.instance.challenge }}</i><br>
+                        <dl class="dl-horizontal">
+                        {% for req in preset_form.instance.requirements.all %}
+                            <dt>{{ req.skill }}</dt>
+                            <dd>{{ req.desc }}</dd>
+                        {% endfor %}
+                        </dl>
+                    </td>
+                    {% permission cv 26 %}<td>{{ preset_form.DELETE }}</td>{% endpermission %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        {% permission cv 26 %}
+        <div class="btn-group">
+            <a href="{% url erp_project_presets_add %}" class="btn"><i class="icon-plus"></i> Add</a>
+            <button class="btn btn-warning"><i class="icon-minus"></i> Delete</button>
+        </div>
+        {% endpermission %}
+    </form>
+    {% else %}
+        <p class="alert alert-block alert-warning">
+            The list of Project Presets is empty.<br>
+            Please add one or more presets.
+        </p>
+        <p>
+            <a href="{% url erp_project_presets_add %}" class="btn"><i class="icon-plus"></i> Add</a>
+        </p>
+    {% endif %}
+{% endblock %}

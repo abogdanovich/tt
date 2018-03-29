@@ -1,0 +1,27 @@
+{% extends "erp/base_print.html" %}
+
+{% block page_title %}{{ block.super }} - Previous Project Preview & Print{% endblock %}
+
+{% block content %}
+    <h1>Previous Project: {{ pp }}</h1>
+    <h2>Curriculum Vitae: {{ view_cv }}</h2>
+    <small>Date of generation: {% now "jS F Y, H:i" %}</small>
+    <hr>
+    <h2>Project Data</h2>
+    <table class="rows">
+        <tr><td class="span3 ta_lm">Briefly Description</td><td class="span9 ta_lm">{{ pp.challenge }}</td></tr>
+        <tr><td class="ta_lm">My role</td><td class="ta_lm">{{ pp.role }}</td></tr>
+        <tr><td class="ta_lm">Description of role</td><td class="ta_lm">{{ pp.desc }}</td></tr>
+        <tr><td class="ta_lm">Time interval</td><td class="ta_lm">{{ pp.date_start|default_if_none:"unknown" }}&emsp;&mdash;&emsp;{{ pp.date_finish|default_if_none:"unknown" }}</td></tr>
+    </table>
+    <h2>Screenshots</h2>
+    {% if sss %}
+    <div class="colsblock">
+        {% for ss in sss %}
+        <div class="cols c2"><img src="{{ ss.image.url }}" width="100%"><br><small>{{ ss.desc }}</small></div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>The screenshot list is empty.</p>
+    {% endif %}
+{% endblock %}

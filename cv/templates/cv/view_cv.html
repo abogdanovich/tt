@@ -1,0 +1,305 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - CV View{% endblock %}
+
+{% block jquery_ready %}
+    {% comment %}
+    $('button[id ^= cv_]').click(function() {
+        $('div[id ^= cv_][id $= _data]').hide();
+        $('div#'+this.id+'_data').show();
+    });
+    %().click(function() {});
+    {% if request.REQUEST.tab %}
+        $('button#cv_{{ request.REQUEST.tab }}').click();
+    {% else %}
+        $('button[id ^= cv_]').first().click();
+    {% endif %}
+    {% endcomment %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>View CV of {{ view_cv.name }} {{ view_cv.surname }}&emsp;<a class="btn" href="{% url erp_cv_print cv_id=view_cv.id %}" target="_blank">Prewiew & Print</a></h1>
+    {% if view_cv.fired %}
+        <div class="alert">
+            <span class="warning"><strong>Warning!</strong> This employee has fired (been discharged).</span>
+        </div>
+    {% endif %}
+    {% comment %}
+    <div id="cv_btns" class="btn-group" data-toggle="buttons-radio">
+        <button id="cv_personal" class="btn">Personal Info</button>
+        <button id="cv_fl" class="btn">Foreign Languages Skills</button>
+        <button id="cv_skills" class="btn">Technical Expertise</button>
+        <button id="cv_projects" class="btn">List of Projects</button>
+        <button id="print" class="btn btn-primary">Full CV for print</button>
+    </div>
+    {% endcomment %}
+    <div style="margin-top: 1em;">
+        <div id="cv_personal_data">
+            <h2>Personal Info
+                {% ifequal view_cv.id cv.id %}&emsp;<a href="{% url erp_cv_mod_personal cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                {% else %}
+                    {% permission cv 41 %}&emsp;<a href="{% url erp_cv_mod_personal cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}
+                {% endifequal %}
+            </h2>
+            {% if not view_cv.position %}
+                <p class="alert alert-block alert-error">Your "Position" field haven`t defined yet. Please inform about this problem your Team Lead, PM or HRM.</p>
+            {% endif %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <tr><td class="span3">Name</td><td class="span9">{{ view_cv.name }}</td></tr>
+                <tr><td>Surname</td><td>{{ view_cv.surname }}</td></tr>
+                <tr{% if not view_cv.position %} class="error" title="empty position"{% endif %}><td>Position</td><td>{{ view_cv.position|default_if_none:"&mdash;" }}</td></tr>
+            {% if view_cv.user %}
+                <tr{% if not view_cv.user.dep %} class="warning" title="empty departament"{% endif %}><td>Department</td><td>{{ view_cv.user.dep|default_if_none:"&mdash;" }}</td></tr>
+                <tr{% if not view_cv.user.group %} class="warning" title="empty group"{% endif %}><td>Group</td><td>{{ view_cv.user.group|default_if_none:"&mdash;" }}</td></tr>
+                <tr{% if not view_cv.user.profession %} class="warning" title="empty profession"{% endif %}><td>Profession</td><td>{{ view_cv.user.profession|default_if_none:"&mdash;" }}</td></tr>
+            {% endif %}
+            </table>
+            <h2>Contacts
+                {% ifequal view_cv.id cv.id %}&emsp;<a href="{% url erp_cv_mod_contacts cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                {% else %}
+                    {% permission cv 41 %}&emsp;<a href="{% url erp_cv_mod_contacts cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endpermission %}
+                {% endifequal %}
+            </h2>
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            {% if view_cv.user %}
+                <tr><td class="span3">E-Mail</td><td class="span9">{{ view_cv.user.email }}</td></tr>
+                <tr><td class="span3">Skype Account</td><td class="span9">{{ view_cv.user.skype }}</td></tr>
+            {% endif %}
+            {% for contact in view_cv.contacts.all %}
+                <tr><td class="span3">{{ contact.name }}</td><td class="span9">{{ contact.val }}</td></tr>
+            {% endfor %}
+            </table>
+        </div>
+        <div id="cv_fl_data">
+            <h2>Foreign Languages Skills
+                {% ifequal view_cv.id cv.id %}{% if view_cv.edit_fl %}&emsp;<a href="{% url erp_cv_mod_fl cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>{% endif %}
+                {% else %}
+                    {% permission cv 42 %}&emsp;<a href="{% url erp_cv_mod_fl cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                    {% not_permission %}{% endpermission %}
+                {% endifequal %}
+            </h2>
+            {% if fls %}
+                <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th class="span1">#</th>
+                            <th class="span3">Language</th>
+                            <th class="span4">Spoken Skill</th>
+                            <th class="span4">Written Skill</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for fl in fls %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ fl.get_language_display }}</td>
+                            <td>{{ fl.get_spoken_display }}</td>
+                            <td>{{ fl.get_written_display }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-warning">The list of your foreign languages is empty. Add one or more languages.</p>
+            {% endif %}
+        </div>
+        <div id="cv_skills_data">
+            <h2>Technical Expertise Skills
+                {% ifequal view_cv.id cv.id %}
+                    {% if view_cv.edit_skills %}&emsp;<span class="btn-group">
+                        <a href="{% url erp_cv_add_skills cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                        {% if skills %}
+                            <a href="{% url erp_cv_mod_skills cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                        {% endif %}
+                        </span>
+                    {% endif %}
+                {% else %}
+                    {% permission cv 43 %}&emsp;<span class="btn-group">
+                        <a href="{% url erp_cv_add_skills cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                        {% if skills %}
+                            <a href="{% url erp_cv_mod_skills cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                        {% endif %}
+                    </span>
+                    {% endpermission %}
+                {% endifequal %}
+            </h2>
+            <p class="muted"><small>For add skills to this list or delete skills from here click "Add" button.<br>
+            For edit description text of your skills click "Edit" button.</small></p>
+            {% if skills %}
+                <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                    <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Skill</th>
+                        <th class="span8">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for skill in skills %}
+                        <tr{% if not skill.desc %} class="warning" title="empty skill"{% endif %}>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ skill.skill }}</td>
+                            <td>{{ skill.desc|default_if_none:"&mdash;" }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-warning">The list of your technical expertise skills is empty. Add one or more Skills to self list of skills.</p>
+            {% endif %}
+        </div>
+        <div id="cv_certificates_data">
+            <h2>List of Certificates
+                {% ifequal view_cv.id cv.id %}&emsp;<div class="btn-group">
+                    <a href="{% url erp_cv_certificates_add cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                    <a href="{% url erp_cv_certificates_del cv_id=view_cv.id %}" class="btn btn-warning" type="button"><i class="icon-minus"></i> Delete</a>
+                    </div>
+                {% else %}
+                    {% permission cv 44 %}&emsp;<div class="btn-group">
+                    <a href="{% url erp_cv_certificates_add cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                    <a href="{% url erp_cv_certificates_del cv_id=view_cv.id %}" class="btn btn-warning" type="button"><i class="icon-minus"></i> Delete</a>
+                    </div>
+                    {% endpermission %}
+                {% endifequal %}
+            </h2>
+            <p class="muted">If You have Technical Skills Certificates you can add them to CV.<br>
+            Click "Add" button for adding certificate data, click "Delete" button for select & delete selected certificates.</p>
+            {% if certificates %}
+                <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th class="span1">#</th>
+                            <th class="span2">Image</th>
+                            <th class="span6">Title / Description</th>
+                            <th class="span3">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for cert in certificates %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="span2">
+                                <a href="{% url erp_cv_certificate_mod cv_id=view_cv.id cert_id=cert.id %}" title="Click to view Certificate data">
+                                    {% if cert.image %}
+                                        <img src="{{ cert.image.url }}" width="100%">
+                                    {% else %}
+                                        <img src="{{ STATIC_URL }}images/erp_certificate1.jpg" width="102px">
+                                    {% endif %}</a>
+                            </td>
+                            <td>
+                                <strong><a href="{% url erp_cv_certificate_mod cv_id=view_cv.id cert_id=cert.id %}">{{ cert.title }}</a></strong><br>
+                                <small class="muted">{{ cert.desc|truncatewords:25 }}</small></td>
+                            <td>
+                                {{ cert.date|default_if_none:"&mdash;" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-block alert-info">You haven`t any Certificates yet. Please add one or more Certificates data here.</p>
+            {% endif %}
+        </div>
+        <div id="cv_projects_data">
+            <h2>List of Projects
+                {% if wgs %}
+                    {% ifequal view_cv.id cv.id %}&emsp;<a href="{% url erp_cv_mod_projects cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                    {% else %}
+                        {% permission cv 45 %}&emsp;<a href="{% url erp_cv_mod_projects cv_id=view_cv.id %}" class="btn btn-primary" type="button"><i class="icon-edit"></i> Edit</a>
+                        {% not_permission %}{% endpermission %}
+                    {% endifequal %}
+                {% endif %}
+            </h2>
+            {% if wgs %}
+                <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th class="span1">#</th>
+                            <th class="span4">Project/<br>Business Challenge</th>
+                            <th class="span4">Role/<br>Description</th>
+                            <th class="span3">Start Date/<br>Finish Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for wg in wgs %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <strong><a href="{% url erp_project prj_id=wg.project.id %}" title="Click to view Project">{{ wg.project.title }}</a></strong>&emsp;
+                                {% with wg.project.get_state as prj_state %}
+                                    {% ifequal prj_state "prepare" %}<span class="badge badge-info" title="in prepare state">P</span>{% endifequal %}
+                                    {% ifequal prj_state "develop" %}<span class="badge badge-success" title="in develop state">D</span>{% endifequal %}
+                                    {% ifequal prj_state "pause" %}<span class="badge badge-warning" title="in pause state">P</span>{% endifequal %}
+                                    {% ifequal prj_state "finish" %}<span class="badge badge"  title="in finish state">F</span>{% endifequal %}
+                                {% endwith %}
+                                <br>
+                                <small class="muted">{{ wg.project.challenge|truncatewords:25 }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ wg.role }}</strong><br>
+                                <small class="muted">{{ wg.desc|truncatewords:25 }}</small></td>
+                            <td>
+                                {{ wg.date_start|default_if_none:"&mdash;" }}<br>
+                                {{ wg.date_finish|default_if_none:"&mdash;" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-warning">The list of your projects is empty. Your CV hasn`t added to any projects yet. Tell about this anyone PM or Team Lead.</p>
+            {% endif %}
+        </div>
+        <div id="cv_prev_projects_data">
+            <h2>List of Previous Projects
+                {% ifequal view_cv.id cv.id %}&emsp;<div class="btn-group">
+                    <a href="{% url erp_cv_prevproject_add cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                    <a href="{% url erp_cv_prevprojects_del cv_id=view_cv.id %}" class="btn btn-warning" type="button"><i class="icon-minus"></i> Delete</a>
+                    </div>
+                {% else %}
+                    {% permission cv 46 %}&emsp;<div class="btn-group">
+                        <a href="{% url erp_cv_prevproject_add cv_id=view_cv.id %}" class="btn" type="button"><i class="icon-plus"></i> Add</a>
+                        <a href="{% url erp_cv_prevprojects_del cv_id=view_cv.id %}" class="btn btn-warning" type="button"><i class="icon-minus"></i> Delete</a>
+                        </div>
+                    {% endpermission %}
+                {% endifequal %}
+            </h2>
+            <p class="muted"><strong>Warning!</strong> This functionality designed for store Yours projects from previous workplaces.<br>
+            Put here briefly description any project which You develop before coming to our company.</p>
+            {% if prev_projects %}
+                <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th class="span1">#</th>
+                            <th class="span4">Project/<br>Briefly Description</th>
+                            <th class="span4">Role/<br>Description</th>
+                            <th class="span3">Start Date/<br>Finish Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pp in prev_projects %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <strong><a href="{% url erp_cv_prevproject_mod cv_id=view_cv.id pp_id=pp.id %}" title="Click to view Previous Project">{{ pp.title }}</a></strong><br>
+                                <small class="muted">{{ pp.challenge|truncatewords:25 }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ pp.role }}</strong><br>
+                                <small class="muted">{{ pp.desc|truncatewords:25 }}</small></td>
+                            <td>
+                                {{ pp.date_start|default_if_none:"&mdash;" }}<br>
+                                {{ pp.date_finish|default_if_none:"&mdash;" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-block alert-info">You haven`t any previous projects yet. Please add one or more project descriptions here.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

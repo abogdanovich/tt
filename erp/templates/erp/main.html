@@ -1,0 +1,100 @@
+{% extends "erp/base_pretty.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - Main Page{% endblock %}
+
+{% block jquery_ready %}
+    $('button[id ^= skill_]').click(function() {
+        $('div[id ^= skill_][id $= _data]').hide();
+        $('div#'+this.id+'_data').show();
+    }).first().click();
+{% endblock %}
+
+{% block base_content %}
+    <table>
+        <tr style="vertical-align: top;">
+            <td class="span4">
+                <!-- PROJECTS STATISTICS -->
+                <h1>Projects<br>Statistics</h1>
+                <dl class="dl-horizontal">
+                {% permission cv 10 %}{# view project data #}
+                    <dt class="total">Total:</dt><dd class="total"><a href="{% url erp_projects %}">{{ projects.total }}</a></dd>
+                    <dt>Prepare stage:</dt><dd><a href="{% url erp_projects %}?tab=prepare" class="text-info">{{ projects.prepare }}</a></dd>
+                    <dt>Develop stage:</dt><dd><a href="{% url erp_projects %}?tab=develop" class="text-success">{{ projects.develop }}</a>, <small class="muted">from it count:</small></dd>
+                    <dt>Work stage:</dt><dd>&emsp;<a href="{% url erp_projects %}?tab=develop" class="text-success">{{ projects.work }}</a></dd>
+                    <dt>Pause stage:</dt><dd>&emsp;<a href="{% url erp_projects %}?tab=develop" class="text-warning">{{ projects.pause }}</a></dd>
+                    <dt>Finished:</dt><dd><a href="{% url erp_projects %}?tab=finish" class="muted">{{ projects.finish }}</a></dd>
+                {% not_permission %}
+                    <dt class="total">Total:</dt><dd class="total"><span>{{ projects.total }}</span></dd>
+                    <dt>Prepare stage:</dt><dd><span class="text-info">{{ projects.prepare }}</span></dd>
+                    <dt>Develop stage:</dt><dd><span class="text-success">{{ projects.develop }}</span>, <small class="muted">from it count:</small></dd>
+                    <dt>Work stage:</dt><dd>&emsp;<span class="text-success">{{ projects.work }}</span></dd>
+                    <dt>Pause stage:</dt><dd>&emsp;<span class="text-warning">{{ projects.pause }}</span></dd>
+                    <dt>Finished:</dt><dd><span class="muted">{{ projects.finish }}</span></dd>
+                {% endpermission %}
+                </dl>
+            </td>
+            <td class="span4">
+                <!-- CV STATISTICS -->
+                <h1>Curriculum Vitae<br>Statistics</h1>
+                <dl class="dl-horizontal">
+                {% permission cv 40 %}{# view cv data #}
+                    <dt class="total">Total:</dt><dd class="total"><a href="{% url erp_cvs %}">{{ cvs.total }}</a></dd>
+                    <dt>Full:</dt><dd><a href="{% url erp_cvs_full %}" class="text-success">{{ cvs.fulls }}</a></dd>
+                    <dt>Empty positions:</dt><dd><a href="{% url erp_cvs_empty_position %}" class="text-warning">{{ cvs.positions }}</a></dd>
+                    <dt>Empty languages:</dt><dd><a href="{% url erp_cvs_empty_fls %}" class="text-warning">{{ cvs.fls }}</a></dd>
+                    <dt>Empty skills:</dt><dd><a href="{% url erp_cvs_empty_skills %}" class="text-error">{{ cvs.skills }}</a></dd>
+                    <dt>Empty projects:</dt><dd><a href="{% url erp_cvs_empty_projects %}" class="text-error">{{ cvs.projects }}</a></dd>
+                {% not_permission %}
+                    <dt class="total">Total:</dt><dd class="total"><span>{{ cvs.total }}</span></dd>
+                    <dt>Full:</dt><dd><span class="text-success">{{ cvs.fulls }}</span></dd>
+                    <dt>Empty positions:</dt><dd><span class="text-warning">{{ cvs.positions }}</span></dd>
+                    <dt>Empty languages:</dt><dd><span class="text-warning">{{ cvs.fls }}</span></dd>
+                    <dt>Empty skills:</dt><dd><span class="text-error">{{ cvs.skills }}</span></dd>
+                    <dt>Empty projects:</dt><dd><span class="text-error">{{ cvs.projects }}</span></dd>
+                {% endpermission %}
+                </dl>
+            </td>
+            <td>
+                <!-- EMPLOYEE STATISTICS -->
+                <h1>Employment of staff<br>on projects</h1>
+                <dl class="dl-horizontal">
+                {% permission cv 10 %}{# view project data #}
+                    <dt>Idle:</dt><dd><a href="{% url erp_cvs_idle %}" class="text-error">{{ emps.idle }}</a></dd>
+                    <dt>Prepare:</dt><dd><a href="{% url erp_cvs_prepare %}" class="text-info">{{ emps.prepare }}</a></dd>
+                    <dt>Develop:</dt><dd><a href="{% url erp_cvs_develop %}" class="text-success">{{ emps.develop }}</a></dd>
+                    <dt>Develop - Work:</dt><dd><a href="{% url erp_cvs_work %}" class="text-success">{{ emps.work }}</a></dd>
+                    <dt>Develop - Pause:</dt><dd><a href="{% url erp_cvs_pause %}" class="text-warning">{{ emps.pause }}</a></dd>
+                {% not_permission %}
+                    <dt>Idle:</dt><dd><span class="text-error">{{ emps.idle }}</span></dd>
+                    <dt>Prepare:</dt><dd><span class="text-info">{{ emps.prepare }}</span></dd>
+                    <dt>Develop:</dt><dd><span class="text-success">{{ emps.develop }}</span></dd>
+                    <dt>Develop - Work:</dt><dd><span class="text-success">{{ emps.work }}</span></dd>
+                    <dt>Develop - Pause:</dt><dd><span class="text-warning">{{ emps.pause }}</span></dd>
+                {% endpermission %}
+                </dl>
+            </td>
+        </tr>
+    </table>
+    {% if skills %}
+    <h1>Technical Expertise Skills Statistics</h1>
+    <div id="cv_btns" class="btn-group" data-toggle="buttons-radio">
+        {% for key, skill in skills.items %}
+        <button id="skill_{{ key }}" class="btn">{{ skill.name }}</button>
+        {% endfor %}
+    </div>
+    <div style="margin-top: 1em;">
+        {% for key, skill in skills.items %}
+        <div id="skill_{{ key }}_data">
+            <h2>{{ skill.name }} tags</h2>
+            <ul>
+                {% for tag, count in skill.tags.items %}
+                    <li><a href="{% url erp_cv_filter_skill s_id=key %}?tag={{ tag|urlencode }}">{{ tag }}</a> ({{ count }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}

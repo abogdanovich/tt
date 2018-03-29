@@ -1,0 +1,31 @@
+{% extends "projects/base.html" %}
+
+{% block page_title %}{{ block.super }} - Main Page{% endblock %}
+
+{% block jquery_ready %}
+    $("input#id_date_start").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input#id_date_finish").datepicker({ "dateFormat": "yy-mm-dd" });
+{% endblock %}
+
+{% block base_content %}
+    <h1>{% ifequal op 'add' %}Add a New empty Project Preset{% endifequal %}{% ifequal op 'project' %}Make Project Preset from selected Project data{% endifequal %}{% ifequal op 'mod' %}Edit data of the Current Project Preset{% endifequal %}</h1>
+    <form action="{% ifequal op 'add' %}{% url erp_project_presets_add %}{% endifequal %}{% ifequal op 'project' %}{% url erp_project_presets_add_from_project prj_id=project.id %}{% endifequal %}{% ifequal op 'mod' %}{% url erp_project_preset_mod pst_id=p_mform.instance.id %}{% endifequal %}" method="POST">
+        {% csrf_token %}
+        <h2>Project Preset Data</h2>
+        {{ p_mform.errors }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <tr><td class="span4">Preset Title</td><td>{{ p_mform.title }}{{ p_mform.title.errors }}</td></tr>
+            <tr><td>Business Challenge</td><td>{{ p_mform.challenge }}{{ p_mform.challenge.errors }}</td></tr>
+            <tr><td>Service</td><td>{{ p_mform.service }}{{ p_mform.service.errors }}</td></tr>
+            <tr><td>Industry</td><td>{{ p_mform.industry }}{{ p_mform.industry.errors }}</td></tr>
+            <tr><td>Solution</td><td>{{ p_mform.solution }}{{ p_mform.solution.errors }}</td></tr>
+        </table>
+        {% ifequal op 'mod' %}<input type="hidden" name="preset" value="{{ p_mform.instance.id }}">{% endifequal %}
+        {% ifequal op 'project' %}<input type="hidden" name="project" value="{{ project.id }}">{% endifequal %}
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            {% ifequal op 'mod' %}<a href="{% url erp_project_preset pst_id=p_mform.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>{% endifequal %}
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

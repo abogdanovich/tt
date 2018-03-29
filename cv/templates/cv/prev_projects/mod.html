@@ -1,0 +1,116 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - Edit Previous Project{% endblock %}
+
+{% block jquery_ready %}
+    $("input[id ^= id_][id $= _date_start]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("input[id ^= id_][id $= _date_finish]").datepicker({ "dateFormat": "yy-mm-dd" });
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= screenshots-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= screenshots-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    {% ifnotequal op 'del' %}
+        <h1>{% ifequal op 'add' %}Add a New Previous Project {% endifequal %}{% ifequal op 'mod' %}Edit data of the Current Previous Project{% endifequal %}
+        {% ifequal op 'mod' %}
+            &emsp;<div class="btn-group">
+                <a href="{% url erp_cv_prevproject_print cv_id=view_cv.id pp_id=pp_mform.instance.id %}" class="btn" title="Preview & Print" target="_blank"><i class="icon-print"></i> Print</a>
+                <a href="{% url erp_cv_prevproject_del cv_id=view_cv.id pp_id=pp_mform.instance.id %}" class="btn btn-warning" title="Delete current project"><i class="icon-warning-sign"></i> Delete</a>
+            </div>{% endifequal %}
+        </h1>
+        <form action="{% ifequal op 'add' %}{% url erp_cv_prevproject_add cv_id=view_cv.id %}{% endifequal %}{% ifequal op 'mod' %}{% url erp_cv_prevproject_mod cv_id=cv.id pp_id=pp_mform.instance.id %}{% endifequal %}" method="POST">
+            {% csrf_token %}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <tbody>
+                    <tr class="control-group{% if pp_mform.title.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.title.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.title }}{{ pp_mform.title.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if pp_mform.challenge.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.challenge.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.challenge }}{{ pp_mform.challenge.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if pp_mform.role.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.role.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.role }}{{ pp_mform.role.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if pp_mform.desc.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.desc.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.desc }}{{ pp_mform.desc.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if pp_mform.date_start.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.date_start.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.date_start }}{{ pp_mform.date_start.errors }}</td>
+                    </tr>
+                    <tr class="control-group{% if pp_mform.date_finish.errors %} error{% endif %}">
+                        <td class="span3">{{ pp_mform.date_finish.label_tag }}</td>
+                        <td class="span 9">{{ pp_mform.date_finish }}{{ pp_mform.date_finish.errors }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {{ pp_mform.cv }}
+            {% ifequal op 'mod' %}{{ pp_mform.id }}{% endifequal %}
+            <input type="hidden" name="stage" value="validate">
+            <div class="btn-group">
+                <a href="{% url erp_cv cv_id=view_cv.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+                <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+            </div>
+        </form>
+        {% ifequal op 'mod' %}
+        <h1 style="margin-top: 1em;">Screenshots for current previous project.</h1>
+        <p class="muted">You can add only no more than 5 screenshots.</p>
+        <form action="{% url erp_cv_prevproject_mod_ss cv_id=view_cv.id pp_id=pp_mform.instance.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ pp_ss_iforms.management_form }}
+            <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">Image</th>
+                        <th class="span6">Briefly Description</th>
+                        <th class="span1">Delete<br>
+                            <span class="btn-group">
+                                <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                                <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for pp_ss_form in pp_ss_iforms %}
+                    <tr>
+                        <td>{{ forloop.counter }}{{ pp_ss_form.id }}</td>
+                        <td>{{ pp_ss_form.image }}{{ pp_ss_form.image.errors }}</td>
+                        <td>{{ pp_ss_form.desc }}{{ pp_ss_form.desc.errors }}</td>
+                        <td>{{ pp_ss_form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <input type="hidden" name="stage" value="validate">
+            <div class="btn-group">
+                <a href="{% url erp_cv cv_id=view_cv.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+                <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+            </div>
+        </form>
+        {% endifequal %}
+    {% else %}
+        <h1>Delete data of the Current Previous Project</h1>
+        <p class="alert alert-block alert-warning">Do you really wand to delete current Project?<br>
+        <strong>WARNING!!!</strong> This operation won`t be revert.</p>
+        <dl class="dl-horizontal">
+            <dt>Project:</dt>
+            <dd>{{ pp_mform.instance.title }}</dd>
+            <dt>Briefly Description:</dt>
+            <dd>{{ pp_mform.instance.challenge }}</dd>
+        </dl>
+        <form action="{% url erp_cv_prevproject_del cv_id=view_cv.id pp_id=pp_mform.instance.id %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="stage" value="confirm">
+            <div class="btn-group">
+                <a href="{% url erp_cv_prevproject_mod cv_id=view_cv.id pp_id=pp_mform.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+                <button class="btn btn-warning" type="submit"><i class="icon-warning-sign"></i> Confirm</button>
+            </div>
+        </form>
+    {% endifnotequal %}
+{% endblock %}

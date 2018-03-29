@@ -1,0 +1,162 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Дежурство{% endblock %}
+
+{% block duty %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+    {% if duty_list_next %}
+
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+            <tr>
+                <td style="padding: 2px;">
+                    График дежурств на текущий месяц [{{month}}]
+                </td></tr>
+            <tr>
+                <td>
+                    <table width="100%" border="1px" cellpadding="1" cellspacing="1">
+
+                        {% for duty in duty_list %}
+                            <tr>
+                                {% for d in duty %}
+
+                                    {% if forloop.first %}
+
+                                        <td>{{ d.name }}<br/>{{ d.surname }}</td>
+
+                                    {% else %}
+
+                                        {% if d.is_duty == 1 %}
+                                            <td align="center" width="30px" id="td_duty_{{ d.userid }}_{{ d.date }}" bgcolor="red">
+                                                <div id="duty_{{ d.userid }}_{{ d.date }}" onclick="Dajaxice.timecard.save_duty_date(Dajax.process, {'dt': '{{ d.date }}', 'user': {{ d.userid }}, 'button_id': this.id });" style="width: 20px; height: 20px; ">
+                                                    {{d.sdate}}
+                                                </div>
+
+                                                {% else %}
+
+                                            <td align="center" width="30px" class="duty_hover" id="td_duty_{{ d.userid }}_{{ d.date }}">
+                                            <div id="duty_{{ d.userid }}_{{ d.date }}" onclick="Dajaxice.timecard.save_duty_date(Dajax.process, {'dt': '{{ d.date }}', 'user': {{ d.userid }}, 'button_id': this.id });" style="width: 20px; height: 20px;">
+                                                {{d.sdate}}
+                                            </div>
+                                        {% endif %}
+
+                                    </td>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+
+
+
+                    </table>
+
+                </td>
+            </tr>
+
+
+        </table>
+
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+            <tr>
+                <td style="padding: 2px;">
+                    График дежурств на следующий месяц [{{month_next}}]
+                </td></tr>
+            <tr>
+                <td>
+                    <table width="100%" border="1px" cellpadding="1" cellspacing="1">
+
+                        {% for duty in duty_list_next %}
+
+                            <tr>
+                                {% for d in duty %}
+
+                                    {% if forloop.first %}
+
+                                        <td>{{ d.name }}<br/>{{ d.surname }}</td>
+
+                                    {% else %}
+
+                                        {% if d.is_duty %}
+                                            <td align="center" width="30px" id="td_duty_{{ d.userid }}_{{ d.date }}" bgcolor="red">
+                                                <div id="duty_{{ d.userid }}_{{ d.date }}" onclick="Dajaxice.timecard.save_duty_date(Dajax.process, {'dt': '{{ d.date }}', 'user': {{ d.userid }}, 'button_id': this.id });" style="width: 20px; height: 20px;">
+                                                    {{d.sdate}}
+                                                </div>
+                                                {% else %}
+
+                                            <td align="center" width="30px" class="duty_hover" id="td_duty_{{ d.userid }}_{{ d.date }}">
+                                            <div id="duty_{{ d.userid }}_{{ d.date }}" onclick="Dajaxice.timecard.save_duty_date(Dajax.process, {'dt': '{{ d.date }}', 'user': {{ d.userid }}, 'button_id': this.id });" style="width: 20px; height: 20px;">
+                                                {{d.sdate}}
+                                            </div>
+                                        {% endif %}
+
+                                    </td>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+
+
+
+                    </table>
+
+                </td>
+            </tr>
+
+
+        </table>
+
+    {% else %}
+
+        <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+            <tr>
+                <td style="padding: 2px;">
+                    График дежурств на текущий месяц [{{month}}]
+                </td></tr>
+            <tr>
+                <td>
+                    <table width="100%" border="1px" cellpadding="1" cellspacing="1">
+
+                        {% for duty in duty_list %}
+                            <tr>
+                                {% for d in duty %}
+
+                                    {% if forloop.first %}
+                                        <td>{{ d.name }}<br/>{{ d.surname }}</td>
+
+                                    {% else %}
+
+                                        {% if d.is_duty == 1 %}
+                                            <td align="center" width="30px" id="td_duty_{{ d.userid }}_{{ d.date }}" bgcolor="red">
+                                                <div id="duty_{{ d.userid }}_{{ d.date }}" style="width: 20px; height: 20px;">
+                                                    {{d.sdate}}
+                                                </div>
+                                                {% else %}
+                                            <td align="center" width="30px" id="td_duty_{{ d.userid }}_{{ d.date }}" >
+                                            <div id="duty_{{ d.userid }}_{{ d.date }}" style="width: 20px; height: 20px;">
+                                                {{d.sdate}}
+                                            </div>
+                                        {% endif %}
+
+                                    </td>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+
+
+
+                    </table>
+
+                </td>
+            </tr>
+
+
+        </table>
+
+    {% endif %}
+
+{% endblock %}

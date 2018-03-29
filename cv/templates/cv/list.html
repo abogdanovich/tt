@@ -1,0 +1,86 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - CV List{% endblock %}
+
+{% block jquery_ready %}
+
+{% endblock %}
+
+{% block base_content %}
+    <h1>CV List</h1>
+    <h2 class="muted">{{ filter_msg }}</h2>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <span class="brand">Filters</span>
+            <ul class="nav">
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By Offices: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="filter_office_value">All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Not in TT system</a></li>
+                        {% for office in offices %}
+                        <li><a href="#">{{ office.full_name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="navbar-text">By Position: </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="filter_state_value">All</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">All</a></li>
+                        <li class="divider"></li>
+                        {% for pos in positions %}
+                        <li><a href="#">{{ pos }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+            </ul>
+        </div>
+    </div>
+    <table class="table table-bordered table-hover table-condensed" style="margin-top: 1em;" id="office_{% if office.office %}{{ office.office.short_name }}{% else %}others{% endif %}_list">
+        <thead>
+            <tr>
+                <th class="span1" rowspan="2">#</th>
+                <th class="span2" rowspan="2">Employee</th>
+                <th class="span2" rowspan="2">Position</th>
+                <th class="span2" rowspan="2">Foreign languages</th>
+                <th class="span2" rowspan="2">Technical Skills<br>Certificates</th>
+                <th class="span3" colspan="3">Projects</th>
+            </tr>
+            <tr>
+                <th class="span1"><span class="badge badge-info" title="prepare state">Prepare</span></th>
+                <th class="span1"><span class="badge badge-success" title="work state">Work</span></th>
+                <th class="span1"><span class="badge badge-warning" title="pause state">Pause</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cv in cvs %}
+            <tr>
+                <td class="ta_cm">{{ forloop.counter }}</td>
+                <td class="ta_lm"><a href="{% url erp_cv cv_id=cv.id %}" title="view the curriculum vitae">{{ cv.name }} {{ cv.surname }}</a></td>
+                <td class="ta_lm">{{ cv.position }}</td>
+                <td class="ta_cm">{% with fl=cv.fl.count %}<b class="{% if fl %}text-success{% else %}text-warning{% endif %}">{{ fl }}</b>{% endwith %}</td>
+                <td class="ta_cm">{% with skills=cv.skills.count %}<b class="{% if skills %}text-success{% else %}text-warning{% endif %}">{{ skills }}</b>{% endwith %}</td>
+                {% if cv.position.in_projects %}
+                    {% with prjs=cv.get_projects %}
+                    <td class="ta_cm"><b class="{% if prjs.prepare %}text-success{% else %}muted{% endif %}">{{ prjs.prepare|default_if_none:"0" }}</b></td>
+                    <td class="ta_cm"><b class="{% if prjs.work %}text-success{% else %}text-error{% endif %}">{{ prjs.work|default_if_none:"0" }}</b></td>
+                    <td class="ta_cm"><b class="{% if prjs.pause %}text-warning{% else %}muted{% endif %}">{{ prjs.pause|default_if_none:"0" }}</b></td>
+                    {% endwith %}
+                {% else %}
+                    <td class="ta_cm"><span class="muted">&mdash;</span></td>
+                    <td class="ta_cm"><span class="muted">&mdash;</span></td>
+                    <td class="ta_cm"><span class="muted">&mdash;</span></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

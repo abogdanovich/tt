@@ -1,0 +1,208 @@
+{% if ttuser %}
+    <div class="widget">
+        <table width="220" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td align="center">
+                <div style="padding: 10px;">
+
+                    <table border="0" width="130" cellspacing="2" cellpadding="2">
+                        <tr>
+                            <td colspan="2" align="center">
+                                {% if ttuser.avator != "" %}
+                                    <span><img id="user_avator" src="{{ media_url }}userpic/{{ ttuser.avator }}" class="active" style="max-height: 128; max-width: 128; width: auto; height: auto"/></span>
+                                {% else %}
+                                    {% if ttuser.fb != '' %}
+                                        <span><img id="user_avator" src="https://graph.facebook.com/{{ ttuser.fb }}/picture?type=large" class="active" style="max-height: 128; max-width: 128; width: auto; height: auto"></span>
+                                    {% else %}
+                                        <span><img id="user_avator" src="{{ media_url }}userpic/noavator.jpg" class="active" style="max-height: 128; max-width: 128; width: auto; height: auto"/></span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr align="left"><td>Команда</td><td align="right">{{ ttuser.dep }}</td></tr>
+                        <tr align="left"><td>Рабочих дней</td><td align="right">{{ month_days }}</td></tr>
+                        <tr align="left"><td>Рабочих часов</td><td align="right">{{ month_hours }}</td></tr>
+                        {% if ttuser.office == 'UL' %}
+
+                            <tr><td colspan="2" align="center">
+                                <b>Отработка времени</b>
+                            </td></tr>
+                            <tr align="left"><td><b>Всего</b></td><td align="right"><b>{{ month_user_time }}</b></td></tr>
+                            <tr align="left"><td><b>Сегодня</b></td><td align="right"><b>{{ today_user_time }}</b></td></tr>
+                            <tr align="left"><td><b>Ещё работать</b></td><td align="right"><b>{{ month_user_need_time }}</b></td></tr>
+
+
+                            {% if user_state == 1 %}
+
+                                {% if not overtime %}
+                                    <tr><td colspan="2" align="center">
+                                        <div id="counter_form" style="color: #FF6600">
+                                            Сегодня работать: <br/>
+                                            <div id="counter" style="color: black; font-size: 20;"></div>
+
+                                            <script type="text/javascript">
+                                                var timetogo = {{ timer_time }};
+
+                                                var timer = window.setInterval(function() {
+
+                                                    var hh = Math.floor(timetogo/3600);
+                                                    var mm = Math.floor(timetogo/60%60);
+                                                    var ss = timetogo%60;
+
+                                                    $('#counter').text(hh+":"+mm+":"+ss);
+
+                                                    if (timetogo <= 0) {
+                                                        window.clearInterval(timer);
+                                                    }
+                                                    timetogo--;
+                                                }, 1000);
+                                            </script>
+                                        </div>
+                                    </td>
+                                    </tr>
+                                {% else %}
+
+                                    <tr><td colspan="2" align="center">
+                                        <div id="counter_form" style="color: #006600">
+                                            Переработка: <br/>
+                                            <div id="counter" style="color: black; font-size: 20;"></div>
+
+                                            <script type="text/javascript">
+                                                var timetogo = {{ timer_time }};
+
+                                                var timer = window.setInterval(function() {
+
+                                                    var hh = Math.floor(timetogo/3600);
+                                                    var mm = Math.floor(timetogo/60%60);
+                                                    var ss = timetogo%60;
+
+                                                    $('#counter').text(hh+":"+mm+":"+ss);
+
+                                                    if (timetogo <= 0) {
+                                                        window.clearInterval(timer);
+                                                    }
+                                                    timetogo++;
+                                                }, 1000);
+                                            </script>
+                                        </div>
+                                    </td>
+                                    </tr>
+
+                                {% endif %}
+
+                            {% endif %}
+
+
+                            <tr>
+                                <td colspan="2" align="center">
+                                    <br/>
+                                    <form action="/personal/" method="post">
+                                        {% if user_state %}
+                                            <input type="submit" name="user_time_off" id="user_time_off" class="onoffbutton_in" value=""/>
+                                        {% else %}
+                                            <input type="submit" name="user_time_on" id="user_time_off" class="onoffbutton_out" value=""/>
+                                        {% endif %}
+                                    </form>
+                                    {% if is_duty %}
+                                        <font color="red"><b>Сегодня Вы дежурный</b></font>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            {% if ttuser.accessLevel != 1 %}
+
+                                <tr><td colspan="2" align="center">
+                                    <b>Отработка времени</b>
+                                </td></tr>
+                                <tr align="left"><td><b>Всего</b></td><td align="right"><b>{{ month_user_time }}</b></td></tr>
+                                <tr align="left"><td><b>Сегодня</b></td><td align="right"><b>{{ today_user_time }}</b></td></tr>
+                                <tr align="left"><td><b>Ещё работать</b></td><td align="right"><b>{{ month_user_need_time }}</b></td></tr>
+
+
+                                {% if user_state == 1 %}
+
+                                    {% if not overtime %}
+                                        <tr><td colspan="2" align="center">
+                                            <div id="counter_form" style="color: #FF6600">
+                                                Сегодня работать: <br/>
+                                                <div id="counter" style="color: black; font-size: 20;"></div>
+
+                                                <script type="text/javascript">
+                                                    var timetogo = {{ timer_time }};
+
+                                                    var timer = window.setInterval(function() {
+
+                                                        var hh = Math.floor(timetogo/3600);
+                                                        var mm = Math.floor(timetogo/60%60);
+                                                        var ss = timetogo%60;
+
+                                                        $('#counter').text(hh+":"+mm+":"+ss);
+
+                                                        if (timetogo <= 0) {
+                                                            window.clearInterval(timer);
+                                                        }
+                                                        timetogo--;
+                                                    }, 1000);
+                                                </script>
+                                            </div>
+                                        </td>
+                                        </tr>
+                                    {% else %}
+
+                                        <tr><td colspan="2" align="center">
+                                            <div id="counter_form" style="color: #006600">
+                                                Переработка: <br/>
+                                                <div id="counter" style="color: black; font-size: 20;"></div>
+
+                                                <script type="text/javascript">
+                                                    var timetogo = {{ timer_time }};
+
+                                                    var timer = window.setInterval(function() {
+
+                                                        var hh = Math.floor(timetogo/3600);
+                                                        var mm = Math.floor(timetogo/60%60);
+                                                        var ss = timetogo%60;
+
+                                                        $('#counter').text(hh+":"+mm+":"+ss);
+
+                                                        if (timetogo <= 0) {
+                                                            window.clearInterval(timer);
+                                                        }
+                                                        timetogo++;
+                                                    }, 1000);
+                                                </script>
+                                            </div>
+                                        </td>
+                                        </tr>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+
+                                <tr>
+                                    <td colspan="2" align="center">
+                                        <br/>
+                                        <form action="/personal/" method="post">
+                                            {% if user_state %}
+                                                <input type="submit" name="user_time_off" id="user_time_off" class="onoffbutton_in" value=""/>
+                                            {% else %}
+                                                <input type="submit" name="user_time_on" id="user_time_off" class="onoffbutton_out" value=""/>
+                                            {% endif %}
+                                        </form>
+                                        {% if is_duty %}
+                                            <font color="red"><b>Сегодня Вы дежурный</b></font>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% endif %}
+                        {% endif %}
+
+                    </table>
+
+                </div>
+            </td></tr>
+        </table>
+    </div>
+{% endif %}
+

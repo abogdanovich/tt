@@ -1,0 +1,18 @@
+
+
+db.timecard_skills.remove({});
+
+db.timecard_skills.insert({"id": NumberInt(1), "order": NumberInt(0), "name": "Javascript", "rus_name": "Javascript"});
+db.timecard_skills.insert({"id": NumberInt(2), "order": NumberInt(1), "name": "PHP", "rus_name": "PHP"});
+db.timecard_skills.insert({"id": NumberInt(3), "order": NumberInt(2), "name": "C++", "rus_name": "C++"});
+db.timecard_skills.insert({"id": NumberInt(4), "order": NumberInt(3), "name": "C#", "rus_name": "C#"});
+db.timecard_skills.insert({"id": NumberInt(5), "order": NumberInt(4), "name": "HTML", "rus_name": "HTML"});
+db.timecard_skills.insert({"id": NumberInt(6), "order": NumberInt(4), "name": "CSS", "rus_name": "CSS"});
+
+
+db.timecard_skills.find({});
+
+
+
+
+

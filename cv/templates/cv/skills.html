@@ -1,0 +1,104 @@
+{% extends "cv/base.html" %}
+
+{% load erp_tags %}
+
+{% block page_title %}{{ block.super }} - CV Skills{% endblock %}
+
+{% block jquery_ready %}
+    {% permission cv 31 %}
+    var tbl_skills_dom = document.getElementById('tbl_skills');
+    var total_forms = $('input#id_form-TOTAL_FORMS');
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= form-][name $= -DELETE]").removeAttr('checked');});
+    $("a#ctrl_home_sel_all").click(function() {$("input[name ^= form-][name $= -on_main]").attr('checked', "checked");});
+    $("a#ctrl_home_unsel_all").click(function() {$("input[name ^= 'form-'][name $= -on_main]").removeAttr('checked');});
+    $("a#ctrl_add").click(function() {
+        var old = total_forms.val();
+        total_forms.val(Number(total_forms.val())+1);
+        var row = tbl_skills_dom.insertRow(total_forms.val());
+        var cell1 = row.insertCell(0);
+        cell1.innerHTML = total_forms.val() + '<input type="hidden" name="form-'+old+'-id" id="id_form-'+old+'-id">';
+        var cell2 = row.insertCell(1);
+        cell2.innerHTML = '<input id="id_form-'+old+'-name" type="text" name="form-'+old+'-name" maxlength="50">';
+        var cell3 = row.insertCell(2);
+        cell3.innerHTML = '<textarea id="id_form-'+old+'-desc" rows="3" cols="100" name="form-'+old+'-desc" class="span6"></textarea>';
+        var cell4 = row.insertCell(3);
+        cell4.innerHTML = '<input type="checkbox" name="form-'+old+'-on_main" id="id_form-'+old+'-on_main">';
+        var cell5 = row.insertCell(4);
+        cell5.innerHTML = '<input type="checkbox" name="form-'+old+'-DELETE" id="id_form-'+old+'-DELETE">';
+    });
+    {% endpermission %}
+{% endblock %}
+
+{% block base_content %}
+    <h1>Technical Expertise Skills List for Employees CV<br>
+    <small class="muted">And Technical Requirements for Project description.</small></h1>
+    {% permission cv 31 %}
+    <p class="muted">For <b>add</b> a one or more skills please click one or more times button "Add" in bottom of page.<br>
+    If you want to <b>display/hide</b> tags of specific skill please check/uncheck "Show on Home page" their checkboxes.<br>
+    For <b>DELETE</b> one or some skills record(s) please check one or more "Delete" checkboxes.</p>
+    <p class="text-warning"><b>WARNING!!!</b> This operation also delete this skills with theirs definitions from all CV where they has been added.</p>
+    <form action="{% url erp_skills %}" method="POST">
+    {% csrf_token %}
+    {{ skill_mforms.management_form }}
+        <table id="tbl_skills" class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span3">Skill</th>
+                    <th class="span5">Description</th>
+                    <th class="span2">Show on<br>Home page<br>
+                        <span class="btn-group">
+                            <a id="ctrl_home_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_home_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                    <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for skill_form in skill_mforms %}
+                <tr{% if skill_form.errors %} class="error"{% else %}{% if skill_form.on_main.value %} class="success"{% endif %}{% endif %}>
+                    <td>{{ forloop.counter }}{{ skill_form.id }}{{ skill_form.id.errors }}</td>
+                    <td>{{ skill_form.name }}{{ skill_form.name.errors }}</td>
+                    <td><div class="control-group {% if skill_form.desc.value %}success{% else %}warning{% endif %}">{{ skill_form.desc }}</div>{{ skill_form.desc.errors }}</td>
+                    <td>{{ skill_form.on_main }}{{ skill_form.on_main.errors }}</td>
+                    <td>{{ skill_form.DELETE }}{{ skill_form.DELETE.errors }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a id="ctrl_add" class="btn"><i class="icon-plus"></i> Add</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+    {% not_permission %}
+        <table id="tbl_skills" class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span3">Skill</th>
+                    <th class="span5">Description</th>
+                    <th class="span3">Show on Home page</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for skill in skills %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ skill.name }}</td>
+                    <td><div class="control-group {% if skill.desc.value %}success{% else %}warning{% endif %}">{{ skill.desc }}</div></td>
+                    <td>{% if skill.on_main %}<span class="badge badge-success"><i class="icon-ok-circle"></i> Yes</span>{% else %}<span class="badge badge-warning"><i class="icon-ban-circle"></i> No</span>{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endpermission %}
+{% endblock %}

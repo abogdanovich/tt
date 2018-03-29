@@ -1,0 +1,36 @@
+{% if users %}
+    <div class="widget">
+        <table width="220" style="background-color:#90f78a; border: #a5cc8c 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+            <tr><td>
+                <div style="padding: 10px;">
+                    <img src="../../static/css/images/birthday.png" width="180" align="center"/>
+                    <br/><br/><br/>
+                    {% if qty < 2 %}
+                        Сегодня у нашего коллеги день рождения!
+                        <br/><br/>
+                        {% for user in users %}
+                            <strong>{{ user.name }} {{ user.surname }}</strong>
+                            {% for office in offices %}
+                                {% if office.short_name == user.office %}
+                                    ({{ office.full_name }})
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        Сегодня несколько наших коллег празднуют дни рождения!
+                        <br/><br/>
+                        {% for user in users %}
+                            <strong>{{ user.name }} {{ user.surname }}</strong>
+                            {% for office in offices %}
+                                {% if office.short_name == user.office %}
+                                    ({{ office.full_name }})
+                                {% endif %}
+                            {% endfor %}
+                            <br/>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </td></tr>
+        </table>
+    </div>
+{% endif %}

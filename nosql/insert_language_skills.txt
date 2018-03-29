@@ -1,0 +1,10 @@
+
+db.timecard_language_skills.remove({});
+
+db.timecard_language_skills.insert({"id": NumberInt(0), "order": NumberInt(1), "name": "None", "rus_name": "Нулевой"});
+db.timecard_language_skills.insert({"id": NumberInt(1), "order": NumberInt(2), "name": "Basic", "rus_name": "Базовый"});
+db.timecard_language_skills.insert({"id": NumberInt(2), "order": NumberInt(3), "name": "Advanced", "rus_name": "Расширенный"});
+db.timecard_language_skills.insert({"id": NumberInt(3), "order": NumberInt(4), "name": "Fluent", "rus_name": "Свободный"});
+
+db.timecard_language_skills.find({});
+

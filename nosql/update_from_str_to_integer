@@ -1,0 +1,6 @@
+db.project_appended_employee_role.update({"employeeId": "283"}, { $set: {"employeeId" : 283 }}, false, true)
+db.project_appended_employee_role.update({"appenderId": "283"}, { $set: {"appenderId" : 283 }}, false, true)
+
+
+
+

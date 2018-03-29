@@ -1,0 +1,21 @@
+{% extends "projects/base.html" %}
+
+{% block page_title %}{{ block.super }} - Delete Project Preset{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Project Preset</h1>
+    <p class="alert alert-blosk"><span class="text-warning"><strong>WARNING!!!</strong> Do you want really delete this project preset(s)?</span></p>
+    <ul>
+        {% for pst in presets_del %}
+            <li><strong>{{ pst.title }}</strong><br><small class="muted">{{ pst.challenge }}</small></li>
+        {% endfor %}
+    </ul>
+    <form action="{% url erp_project_presets %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_project_presets %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-warning" type="submit"><i class="icon-hdd"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

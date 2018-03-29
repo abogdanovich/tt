@@ -1,0 +1,19 @@
+<div class="widget">
+<table width="220" height="120" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="5">
+<tr><td>
+
+{% if comments %}
+	Последние коменты Спама... <br/>
+	{% for post in comments %}
+		* <a href="/spam/?spam={{ post.post_id }}" target="blank">{{ post.body|removetags:"h1 h2 h3 div span p iframe pre br a img h4 h5"|truncatechars:50 }}</a><br/>
+	{% endfor %}
+	
+{% else %}
+	Никто не постит....
+{% endif %}
+
+</td></tr>
+</table>
+</td></tr>
+</table>
+</div>

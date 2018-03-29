@@ -1,0 +1,58 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - Delete Certificates{% endblock %}
+
+{% block jquery_ready %}
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= certificates-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= certificates-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Certificates</h1>
+    <p class="alert alert-block alert-warning">For deleting one or some Certificates please check it(they).<br>
+    <strong>WARNING!!!</strong> This operation won`t be revert.</p>
+    <form action="{% url erp_cv_certificates_del cv_id=view_cv.id %}" method="POST">
+        {% csrf_token %}
+        {{ cert_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span2">Image</th>
+                    <th class="span6">Title / Description</th>
+                    <th class="span2">Date</th>
+                    <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cert_form in cert_iforms %}
+                <tr>
+                    <td>{{ forloop.counter }}{{ cert_form.id }}</td>
+                    <td class="span2">
+                    {% if cert_form.instance.image %}
+                        <img src="{{ cert_form.instance.image.url }}" width="100%">
+                    {% else %}
+                        <img src="{{ STATIC_URL }}images/erp_certificate1.jpg" width="102px">
+                    {% endif %}
+                    </td>
+                    <td><strong>{{ cert_form.instance.title }}</strong><br>
+                        <span class="muted">{{ cert_form.instance.desc|truncatewords:25 }}</span>
+                    </td>
+                    <td>{{ cert.date|default_if_none:"&mdash;" }}</td>
+                    <td>{{ cert_form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=view_cv.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-warning" type="submit"><i class="icon-warning-sign"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

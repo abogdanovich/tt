@@ -1,0 +1,2 @@
+db.timecard_projects.update({}, { $set: {closed: false}}, {upsert: false, multi: true} )
+

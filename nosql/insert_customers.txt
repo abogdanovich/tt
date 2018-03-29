@@ -1,0 +1,32 @@
+
+db.timecard_customers.remove({});
+
+db.timecard_customers.insert({"name": "Microsoft", "customerId": ObjectId("53f613f592e6040eec3fbc32")});
+db.timecard_customers.insert({"name": "Apple", "customerId": ObjectId("53f613f592e6040eec3fbc33")});
+db.timecard_customers.insert({"name": "МТС", "customerId": ObjectId("53f613f592e6040eec3fbc34")});
+db.timecard_customers.insert({"name": "Белтелеком", "customerId": ObjectId("53f613f592e6040eec3fbc35")});
+db.timecard_customers.insert({"name": "Турецкие Авиа Линии", "customerId": ObjectId("53f613f592e6040eec3fbc36")});
+db.timecard_customers.insert({"name": "Coka Cola", "customerId": ObjectId("53f613f592e6040eec3fbc37")});
+db.timecard_customers.insert({"name": "Disney", "customerId": ObjectId("53f613f592e6040eec3fbc38")});
+db.timecard_customers.insert({"name": "Converse", "customerId": ObjectId("53f613f592e6040eec3fbc39")});
+db.timecard_customers.insert({"name": "Nike", "customerId": ObjectId("53f613f592e6040eec3fbc40")});
+db.timecard_customers.insert({"name": "Adidas", "customerId": ObjectId("53f613f592e6040eec3fbc41")});
+
+
+
+
+
+db.timecard_customers.remove({});
+db.timecard_customers.insert({"name": "Microsoft", "customer_id": ObjectId("53f613f592e6040eec3fbc32"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Apple", "customer_id": ObjectId("53f613f592e6040eec3fbc33"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "МТС", "customer_id": ObjectId("53f613f592e6040eec3fbc34"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Белтелеком", "customer_id": ObjectId("53f613f592e6040eec3fbc35"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Турецкие Авиа Линии", "customer_id": ObjectId("53f613f592e6040eec3fbc36"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Coka Cola", "customer_id": ObjectId("53f613f592e6040eec3fbc37"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Disney", "customer_id": ObjectId("53f613f592e6040eec3fbc38"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Converse", "customer_id": ObjectId("53f613f592e6040eec3fbc39"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Nike", "customer_id": ObjectId("53f613f592e6040eec3fbc40"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.insert({"name": "Adidas", "customer_id": ObjectId("53f613f592e6040eec3fbc41"), "country": "USA", "address": "Columbia", "contact_person": "", "telephone": "", "email": "microsoft@gmail.com", "others": ""});
+db.timecard_customers.find({});
+
+

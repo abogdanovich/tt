@@ -1,0 +1,62 @@
+<ul id="menus">
+    <li class="{% if menu == "main" %}current_page_item{% endif %}"><a class="home" href="/main/">Офисы</a></li>
+    {% if user.office == 'UL' %}
+            <li class="{% if menu == "personal" %}current_page_item{% endif %}"><a href="/personal/">Время</a></li>
+    {% else %}
+        {% if user.accessLevel != 1 %}
+                <li class="{% if menu == "personal" %}current_page_item{% endif %}"><a href="/personal/">Время</a></li>
+        {% endif %}
+    {% endif %}
+
+
+
+    <li class="{% if menu == "spam" %}current_page_item{% endif %}"
+        ><a href="/spam/">Спам{% if new_posts > 0 %} ({{ new_posts }}) {% endif %}</a
+    ></li
+    >
+
+
+    <li class="{% if menu == "settings" %}current_page_item{% endif %}"><a href="/settings/">Опции</a></li>
+    <li class="{% if menu == "reservation" %}current_page_item{% endif %}"><a href="/reservation/">Бронирование</a></li>
+    <li class="{% if menu == "teams" %}current_page_item {% endif %}"><a href="/teams/">Команда</a></li>
+
+    {% if user.accessLevel == 0 or user.accessLevel == 3 or user.accessLevel == 2 or user.accessLevel == 4 %}
+        {% if conditions_check %}
+            <li class="{% if menu == "report_user" %}current_page_item{% endif %}"><a href="/report_user/"><font color="#FF0000">Мой отчет</font></a></li>
+        {% endif %}
+    {% endif %}
+
+    {% if user.accessLevel == 1 or user.accessLevel == 4 or user.accessLevel == 3 %}
+        <li class=" {% if menu == "reports" %}current_page_item{% endif %}"><a href="/reports/">Недельные отчеты</a></li>
+    {% endif %}
+
+    {% if user.office == "M"%}
+        <li><a href="http://wishes.minsk.ximxim.com" target="blank">Wishes</a></li>
+    {% endif %}
+
+    {% if user.accessLevel == 3 or user.accessLevel == 4 %}
+        <li class="{% if menu == "projects" %}current_page_item{% endif %}"><a href="/projects/">Проекты</a></li>
+    {% endif %}
+
+
+    <li class="{% if menu == "my_projects" %}current_page_item{% endif %}"
+        ><a href="/my_projects/">Мои проекты</a
+    ></li
+    >
+
+    {% if user.accessLevel == 1 or user.accessLevel == 3 %}
+        <li class="{% if menu == "report_time" %}current_page_item{% endif %}"><a href="/report_time/">Отчеты по времени</a></li>
+    {% endif %}
+
+    {% if user.accessLevel == 1 or user.accessLevel == 3 %}
+        <li class="{% if menu == "user_requests" %}current_page_item{% endif %}"><a href="/user_requests/">Часы{% if new_missed_req > 0 %} ({{ new_missed_req }}){% endif %}</a></li>
+    {% endif %}
+
+    {% if user.accessLevel == 2 or user.accessLevel == 3 %}
+        <li class="{% if menu == "admin" %}current_page_item{% endif %}"><a href="/admin/">Админ</a></li>
+    {% endif %}
+    <li class="{% if menu == "duty" %}current_page_item{% endif %}"><a href="/duty/">Дежурство</a></li>
+    <li><a href="/erp/">ERP</a></li>
+    <li><a href="/logout/?logout=1">Выйти</a></li>
+</ul>
+

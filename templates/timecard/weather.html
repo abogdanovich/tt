@@ -1,0 +1,16 @@
+{% if active %}
+<div class="widget">
+<table width="220" height="120" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="5">
+<tr><td>
+<strong>{{ office.full_name }}</strong>
+</td></tr>
+<tr><td>
+<table width=100% height=100% style="background-color:#F7F7F7; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="5">
+<tr><td align="center">
+<script type="text/javascript" charset="windows-1251" src="{{ office.weather_script }}"></script>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</div>
+{% endif %}

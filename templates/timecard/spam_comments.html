@@ -1,0 +1,117 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}personal{% endblock %}
+
+{% block personal %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+<a href="/spam/">Вернуться</a><br/><br/>
+    
+    {% if post %}
+	
+	<div style="margin-top: 10px; border: 1px dotted #5C5C5C; padding: 5px;">
+	
+	
+	<table width="100%" border="0" cellpadding="0" cellspacing="1">
+	<tr><td colspan="2" width="100%">
+	
+	<br/>      
+	<table width="100%" border="0" cellpadding="0" cellspacing="0">
+	  <tr bgcolor="#FFFFFF">
+	  
+	  <td align="left" valign="top" class="rnd" bgcolor="#FFFFFF" width="70px" height="70px;">
+	
+		<div style="margin-left:10px; margin-top: 5px;" >
+		
+		<div class="upicv">
+		<img src="{{ MEDIA_URL }}userpic/{{ post_author_avator }}" width="50px" style="border: 2px #3D3D3D inset;"/>
+		
+		<div class="spamuser">
+		<b style="font-size: 13px;">&nbsp; {{ post_author_name }} </b>
+		</div>
+		
+		</div>
+		<td align='left' width='80%' valign="top">
+		    <br/>&nbsp;&nbsp;<i>{{ post.created|date:"l j | G:i" }}</i>
+		    <br/>&nbsp;&nbsp;
+		 
+		<span style='font-size: 14px; margin-left: 10px;'>
+		{{ post.body|removetags:"block pre i font h1 h2 h3 div span p iframe pre br a img"|truncatewords:5 }}
+		</span><br/>
+              </div>
+	</td>
+		
+	<td align="right" class="rnd" valign="top" width="100%">
+	
+	</td>
+	
+        </tr>
+        </table>
+      
+      </td>
+      </tr>
+      
+      <tr>
+      <td>
+    
+      <div class="scroll">
+     
+
+      {% autoescape off %}{{ post.body|urlize }}{% endautoescape %}
+
+    </div>
+    <br/>
+    <br/>
+    <div class="comment">&nbsp</div>
+    
+    {% if comments %}
+    <hr/>
+    <br/>
+	{% for comment_items in comments %}
+	    {% for item in comment_items %}
+		
+	<div id="user_comment_{{ item.id }}">
+	<div class="comment">
+			<i>{{ item.author_name }} | {{ item.created|date:"l j | G:i" }}</i>
+	
+			
+		<div style="margin-top: 5px; border: 1px dotted #5C5C5C; padding: 5px; background-color: #E0E0E0" class="rnd">
+		    
+			{% autoescape off %}{{ item.body|urlize }}{% endautoescape %}
+			{% if user.id == item.author_id %}
+			    <img src="{{ STATIC_URL }}css/images/del.png" onclick="Dajaxice.timecard.delete_spam_comment(Dajax.process, {'post_id': {{ item.id }}, 'button_id': 'user_comment_{{ item.id }}' });"/>
+			{% endif %}
+		</div>
+	</div>
+	</div>
+	
+	    {% endfor %}
+	{% endfor %}
+	
+     {% endif %}
+	    
+      
+
+	
+	</td>
+	</tr></table>
+	    
+	    </div>
+
+	
+    
+	<form method="post">
+        {% csrf_token %}
+	<br/>
+	
+	<textarea id="comment_post" name="comment_post" rows="7" cols="91" wrap="on"></textarea><br/>
+	
+	<input type="hidden" value="{{ post.id }}" name="post_id" id="post_id" />
+	<br/>
+        <input type="button" value="Добавить комментарий" class="button" name="add_spam_comment" onclick="Dajaxice.timecard.save_spam_comment(Dajax.process, {'post_id': post_id.value, 'comment_post': comment_post.value});" />
+        </form>
+    
+    {% endif %}
+
+{% endblock %}

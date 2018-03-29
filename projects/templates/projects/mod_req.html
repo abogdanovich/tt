@@ -1,0 +1,38 @@
+{% extends "projects/base.html" %}
+
+{% block page_title %}{{ block.super }} - Edit Requirements{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Requirements of {{ prj_req_iforms.instance.title }}</h1>
+    <form action="{% url erp_project_mod_req prj_id=prj_req_iforms.instance.id %}" method="POST">
+        {% csrf_token %}
+        {{ prj_req_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            {% for prj_req_form in prj_req_iforms %}
+                {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        <th class="span1">#</th>
+                        <th class="span3">{{ prj_req_form.skill.label }}</th>
+                        <th class="span8">{{ prj_req_form.desc.label }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                {% endif %}
+            <tr class="control-group{% if prj_req_form.errors %} error{% endif %}">
+                <td>{{ forloop.counter }}{{ prj_req_form.id }}<input type="hidden" name="cv_skills-0-cv" id="id_cv_skills-0-cv" value="{{ prj_req_form.instance.id }}"></td>
+                <td>{{ prj_req_form.get_skill_name }}{% if prj_req_form.instance.skill.desc %}<br><small class="muted">{{ prj_req_form.instance.skill.desc }}</small>{% endif %}</td>
+                <td>{{ prj_req_form.desc }}{{ prj_req_form.desc.errors }}</td>
+            </tr>
+            {% if forloop.last %}
+                </tbody>
+            {% endif %}
+            {% endfor %}
+        </table>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_project prj_id=prj_req_iforms.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+{% endblock %}

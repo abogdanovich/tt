@@ -1,0 +1,48 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - Delete Previous Project{% endblock %}
+
+{% block jquery_ready %}
+    $("a#ctrl_del_sel_all").click(function() {$("input[name ^= prev_projects-][name $= -DELETE]").attr('checked', "checked");});
+    $("a#ctrl_del_unsel_all").click(function() {$("input[name ^= prev_projects-][name $= -DELETE]").removeAttr('checked');});
+{% endblock %}
+
+{% block base_content %}
+    <h1>Delete Previous Projects</h1>
+    <p class="alert alert-block alert-warning">For deleting one or some Previous Projects please check it(they).<br>
+    <strong>WARNING!!!</strong> This operation won`t be revert.</p>
+    <form action="{% url erp_cv_prevprojects_del cv_id=view_cv.id %}" method="POST">
+        {% csrf_token %}
+        {{ pp_iforms.management_form }}
+        <table class="table table-bordered table-hover table-condensed" style="margin-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="span1">#</th>
+                    <th class="span10">Title / Briefly Description</th>
+                    <th class="span1">Delete<br>
+                        <span class="btn-group">
+                            <a id="ctrl_del_sel_all" class="btn btn-mini" title="check all"><i class="icon-plus"></i></a>
+                            <a id="ctrl_del_unsel_all" class="btn btn-mini" title="uncheck all"><i class="icon-minus"></i></a>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for pp_form in pp_iforms %}
+                <tr>
+                    <td>{{ forloop.counter }}{{ pp_form.id }}</td>
+                    <td><strong>{{ pp_form.instance.title }}</strong><br>
+                        <span class="muted">{{ pp_form.instance.challenge|truncatewords:25 }}</span>
+                    </td>
+                    <td>{{ pp_form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" name="stage" value="confirm">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=view_cv.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-warning" type="submit"><i class="icon-warning-sign"></i> Confirm</button>
+        </div>
+    </form>
+{% endblock %}

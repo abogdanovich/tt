@@ -1,0 +1,21 @@
+{% extends "cv/base.html" %}
+
+{% block page_title %}{{ block.super }} - CV Edit Personal{% endblock %}
+
+{% block base_content %}
+    <h1>Edit a Personal Data</h1>
+    <form action="{% url erp_cv_mod_personal cv_id=cv_mform.instance.id %}" method="POST">
+        {% csrf_token %}
+        <dl class="dl-horizontal">
+            <dt class="control-group{% if cv_mform.name.errors %} error{% endif %}">{{ cv_mform.name.label_tag }}</dt><dd class="control-group{% if cv_mform.name.errors %} error{% endif %}">&nbsp;{{ cv_mform.name }}{{ cv_mform.name.errors }}</dd>
+            <dt class="control-group{% if cv_mform.surname.errors %} error{% endif %}">{{ cv_mform.surname.label_tag }}</dt><dd class="control-group{% if cv_mform.surname.errors %} error{% endif %}">&nbsp;{{ cv_mform.surname }}{{ cv_mform.surname.errors }}</dd>
+            </dd>
+        </dl>
+        <input type="hidden" name="stage" value="validate">
+        <div class="btn-group">
+            <a href="{% url erp_cv cv_id=cv_mform.instance.id %}" class="btn"><i class="icon-backward"></i> Back</a>
+            <button class="btn btn-primary" type="submit"><i class="icon-hdd"></i> Save</button>
+        </div>
+    </form>
+    {% if cv_mform.instance.user and cv.id == cv_mform.instance.id %}<p class="alert alert-info"><strong>PS:</strong>&nbsp;If you want modify other personal data go to link <a href="{% url tt_settings %}">https:tt.minsk.ximxim.com/settings/</a></p>{% endif %}
+{% endblock %}

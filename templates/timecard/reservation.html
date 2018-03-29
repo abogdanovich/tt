@@ -1,0 +1,180 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Бронирование{% endblock %}
+
+{% block reservation %}
+
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+    <div id="tabs">
+        <ul>
+            {% if user.accessLevel == 1 or user.accessLevel == 2 or user.accessLevel == 3 %}
+                <li><a href="#tabs-1">Журнал пользования</a></li>
+                <li><a href="#tabs-2">Администрирование</a></li>
+            {% endif %}
+            <li><a href="#tabs-3">Бронирование</a></li>
+        </ul>
+
+        {% if user.accessLevel == 1 or user.accessLevel == 2 or user.accessLevel == 3 %}
+            <div id="tabs-1">
+                {% for c in c_w_o_w_h %}
+                    <h6 style="color:black" align="center">{{ c }}</h6>
+                    <br/>
+                    {% for o in o_w_h %}
+                        {% for o_ in objects %}
+                            {% if o_.category.name == c and o_.name == o %}
+                                <table style="max-height: 200; height: auto; width: 100%"><caption>{{ o_.name }}</caption>
+                                    {% for h in history %}
+                                        {% if h.obj == o_ %}
+                                            <tr>
+                                                <td>{{ h.user }}</td>
+                                                <td>{% if h.status %}<label style="color: forestgreen">ВЕРНУЛИ</label>{% else %}<label style="color: darkred">ЗАБРАЛИ</label>{% endif %}</td>
+                                                <td>{{ h.event }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </table>
+                                <br/><br/>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if user.accessLevel == 1 or user.accessLevel == 2 or user.accessLevel == 3 %}
+            <div id="tabs-2">
+                <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+                    <tr><td>
+                        <div style="padding: 10px;">
+                            <table width="100%" cellpadding="1" cellspacing="1">
+                                <tr bgcolor="#E5F0FF">
+                                    <td>
+                                        <form method="post">
+                                            <input type="input" name="new_category" value="">
+                                            Добавить новую категорию<br/><br/><br/>
+                                            <input type="submit"value="Добавить новую категорию"/>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td></tr>
+                </table>
+                <div style="color: black">{{ message1 }}</div>
+                <br/><br/>
+                <table width="100%" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; color:#000000;" cellpadding="2" cellspacing="0">
+                    <tr><td>
+                        <div style="padding: 10px;">
+                            <table width="100%" cellpadding="1" cellspacing="1">
+                                <tr bgcolor="#E5F0FF">
+                                    <td>
+                                        <form method="post">
+                                            <select name="select_category">
+                                                {% for category in categories %}
+                                                    <option value="{{ category.name }}">{{ category.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <br/><br/>
+                                            <input type="input" name="new_object" value="">
+                                            Добавить новый объект<br/><br/><br/>
+                                            <input type="submit" value="Добавить новый объект"/>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td></tr>
+                </table>
+                <div style="color: black">{{ message2 }}</div>
+                <br/><br/>
+                <br/><br/>
+                {% for category in categories %}
+                    <h6 style="color:black" align="center">{{ category.name }} <a href="/reservation/?del_category={{ category.id }}" ><img src="{{ STATIC_URL }}css/images/del.png"></a></h6>
+                    <table class="zebra" width="100%">
+                        {% for object in objects %}
+                            {% if object.category == category %}
+                                <tr>
+                                    <td style="color:black">
+                                        <br/>
+                                        {{ object.name }}
+                                        <br/><br/>
+                                    </td>
+                                    <td align="right" width="20px">
+                                        <br/>
+                                        <a href="/reservation/?del_object={{ object.id }}" ><img src="{{ STATIC_URL }}css/images/del.png"></a>
+                                        <br/><br/>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                    <br/><br/>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div id="tabs-3">
+            {% if c_w_o %}
+            {% for c in c_w_o %}
+                <h6 style="color:black" align="center">{{ c }}</h6>
+                <table style="border: #cccccc 1px solid; cellpadding:1; color:#000000; cellspacing:1; width:100%">
+                    {% for object in objects %}
+                        {% if object.category.name == c %}
+                            <tr>
+                                <td style="padding: 20">
+                                    <strong>{{ object.name }}</strong>
+                                </td>
+                                {% if not object.is_avaliable and object.user.id == user.id %}
+                                    <td align="right" style="padding: 20">
+                                        ЗАНЯТО ВАМИ
+                                    </td>
+                                    <td align="right" width="64">
+                                        <a href="/reservation/?free={{ object.id }}"><img src="{{ STATIC_URL }}css/images/yellow.png" /></a>
+                                    </td>
+                                {% endif %}
+                                {% if not object.is_avaliable and object.user.id != user.id %}
+                                    <td align="right" style="padding: 20">
+                                        {% if object.user.gender == 'M' %}
+                                            Забрал: {{ object.user.name }} {{ object.user.surname }}
+                                            {% if object.user.skype %}
+                                                (<a href="skype:{{ object.user.skype }}?chat" style="color:#000000"><img src="{{STATIC_URL}}/css/images/skype.png" />&nbsp;{{object.user.skype}}</a>)
+                                            {% endif %}
+                                        {% else %}
+                                            Забрала: {{ object.user.name }} {{ object.user.surname }}
+                                            {% if object.user.skype %}
+                                                (<a href="skype:{{ object.user.skype }}?chat" style="color:#000000"><img src="{{STATIC_URL}}/css/images/skype.png" />&nbsp;{{object.user.skype}}</a>)
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td align="right" width="64">
+                                        <img src="{{ STATIC_URL }}css/images/red.png" />
+                                    </td>
+                                {% endif %}
+                                {% if object.is_avaliable %}
+                                    <td align="right" style="padding: 20">
+                                        СВОБОДНО
+                                    </td>
+                                    <td align="right" width="64">
+                                        <a href="/reservation/?occupy={{ object.id }}"><img src="{{ STATIC_URL }}css/images/green.png" /></a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                </table>
+                <br/><br/>
+            {% endfor %}
+        {% else %}
+            <h3 style="color: #000000">В вашем офисе пока что нет ничего, для чего требовалось бы вести журнал пользования</h3>
+        {% endif %}
+
+
+
+
+
+        </div>
+    </div>
+
+{% endblock %}

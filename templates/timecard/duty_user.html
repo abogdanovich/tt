@@ -1,0 +1,19 @@
+<div class="widget">
+<table width="220" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="2" cellspacing="0">
+<tr><td>
+<div style="padding: 10px;">
+
+{% if dutyman %}
+    Дежурит <br/>
+    <h3>{{ dutyman.name }} {{ dutyman.surname }}</h3>
+    Марсиане отдыхают :)
+{% else %}
+    Дежурят <br/>
+    <h3>Марсиане</h3>
+    Люди отдыхают :)
+{% endif %}
+
+</div>
+</td></tr>
+</table>
+</div>

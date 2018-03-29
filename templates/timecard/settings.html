@@ -1,0 +1,380 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}Настройки{% endblock %}
+
+{% block personal %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+    <script type="text/javascript" >
+        l = DD('l');
+        var allLanguagesIds = [];
+        var allLanguages = [];
+        {% for language in allLanguages %}
+                allLanguagesIds.push("{{language.id}}");
+                allLanguages.push(
+                {
+                   "{{language.id}}": {
+                        '_id': "{{language.id}}",
+                        'name': "{{language.name}}",
+                    }
+                });
+        {% endfor  %}
+    </script>
+
+        <div>
+            <div><h3>Позиции</h3></div>
+            <div class="settings_select_div_positions">
+                <select id="settings_select_position">
+                    {% for position in notAppliedPositions %}
+
+                        <option
+                            id="settings_select_position_option{{position.id__}}"
+                            value="settings_select_position_option{{position.id__}}"
+                        ><div>{{position.rus_name}}</div></option>
+
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div
+                class="settings_add_position"
+                id="settings_add_position{{userSkill.skill_id}}"
+
+                ></div>
+            <div class="cl"></div>
+
+            <div id="settings_div_container_positions">
+                {% for userPosition in usersPositions %}
+                    {% if userPosition.description__.rus_name %}
+                        <div
+                            class="settings_div_position"
+                            id="settings_div_position{{userPosition.description__.id__}}"
+
+                        >
+                            <div
+                                class="settings_div_text_position_name"
+                            >{{userPosition.description__.rus_name}}</div>
+
+
+
+                            <div class="settings_div_checkbox">
+                                <input
+                                    type="checkbox"
+                                    class="checkbox_in_position_in_project"
+                                    id="checkbox_in_position_in_project{{userPosition.description__.id__}}"
+                                    {% if userPosition.show_on_main_page != False %}checked="checked" {% endif %}
+                                >В проектах
+                            </div>
+
+
+                            <div
+                                class="settings_div_remove_position"
+                                id="settings_div_remove_position{{userPosition.description__.id__}}"
+                            ></div>
+                            <div class="cl"></div>
+                        </div>
+
+
+
+
+
+
+                    {% endif %}
+                {% endfor %}
+                <div class="cl"></div>
+            </div>
+
+        </div>
+        <div class="cl"></div>
+
+
+
+
+
+
+
+
+    <div class="settings_div_skills">
+        <div class="settings_title_div_skills"
+            ><div class="settings_title_text_div_skills" ><h3>Навыки</h3></div
+            ><div id="settings_error_field_skills"
+            >{% if user.can_edit_skill == 0 %}[ Вам запрещено редактировать свои навыки ]{% endif %}</div
+        ></div
+        ><div class="cl"></div
+
+
+
+
+
+
+        ><div class="settings_content_div_skills_selectBlock"
+            ><div class="cl"></div
+            ><div class="settings_content_div_skills"
+            ><select id="settings_input_skills">
+                {% for skill in notAppliedSkills %}
+                    <option
+                            id="option_skill_id_{{skill.id_}}"
+                            value="{{skill.rus_name}}"
+
+                            class="color_black"
+
+                    >{{skill.name}}</option>
+                {% endfor  %}
+            </select></div
+            ><div class="div_button_add">
+            <button class='button_add add_skill_to_user' >Add</button>
+            </div>
+        </div>
+        <div class="cl"></div>
+
+
+        <div class="settings_div_set_skills_elements"  id="settings_div_set_skills_elements" >
+
+            {% for userSkill in usersSkills %}
+                <div class="settings_div_set_skill_element" id="settings_div_set_skill_element{{userSkill.skill_id}}">
+                    <div class="settings_div_skill_name"><h3>{{userSkill.skill_name__}}</h3></div>
+                    <div
+                        class="settings_div_remove_skill"
+                        id="settings_div_remove_skill{{userSkill.skill_id}}"
+                        ><img src="/static/images/cross.png"
+                    /></div>
+                    <div class="settings_div_skill_description"
+                            ><textarea
+                            type="text"
+                            class="settings_input_skill_description"
+                            id="settings_input_skill_description{{userSkill.skill_id}}"
+                            >{{userSkill.description}}</textarea
+                    ></div>
+                    <div
+                        class="settings_div_checkbox_show_on_main_page"
+                        id="settings_div_checkbox_show_on_main_page{{userSkill.skill_id}}"
+                    ><input
+                            type="checkbox"
+                            class="settings_checkbox_show_on_main_page"
+                            id="settings_checkbox_show_on_main_page{{userSkill.skill_id}}"
+                            {% if userSkill.show_on_main_page == 1%}checked{% endif %}
+                        /><label
+                            for="settings_checkbox_show_on_main_page{{userSkill.skill_id}}"
+                        >На главной</label
+                    ></div>
+
+                    <div
+                        class="settings_update_skill"
+                        id="settings_update_skill{{userSkill.skill_id}}"
+
+                        ><img src="/static/images/kuba_icon_ok_small.png"
+                    ></div>
+                </div>
+            {% endfor %}
+
+        <div class="cl"></div>
+        </div>
+      <div class="cl"></div>
+    </div>
+    <div class="cl"></div>
+
+
+
+
+
+
+
+
+
+
+    <div class="settings_div_languages">
+        <div class="settings_title_div_languages"
+            ><div class="settings_title_text_div_languages" ><h3>Владение иностранными языками </h3></div
+            ><div id="settings_error_field_languages"
+            >{% if user.can_edit_language_skill == 0 %}[ Вам запрещено редактировать знания языков ]{% endif %}</div
+        ></div
+        ><div class="cl"></div
+        ><div class="settings_content_div_languages"
+            ><select id="settings_input_languages">
+                {% for language in allLanguages %}
+                    <option
+                            id="option_lang_id_{{language.id}}"
+                            value="{{language.name}}"
+
+                            class="color_black"
+                                >{{language.name}}</option>
+                {% endfor  %}
+            </select>
+        </div>
+    </div>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/settings.js"></script>
+
+    <div class="cl"></div>
+
+    <table width="500"
+           style="
+                background-color:#F7F7F7;
+                border: #cccccc 1px solid;
+                font-family:Tahoma;
+                font-size:11px;
+                color:#000000;"
+           cellpadding="1"
+           cellspacing="1"
+    >
+        <tr><td style="padding: 10px;">
+            <h3>Персональные настройки <span id="msg_area" style="color: gray"></span></h3>
+        </td></tr>
+        <tr><td style="padding: 10px;">
+
+            Ваш день рождения: {{ user.hb }} <br/>
+
+            Изменить: <br/>
+            <form method="post">
+                {% csrf_token %}
+
+                <input type="text" id="datepicker" name="user_hb" disabled="disabled" value="{{ user.hb }}">
+                <br/>
+                <br/>
+
+                <input type="input" name="user_phone" id="user_phone" value="{{ user.phone }}">
+                Телефон : +375xx-xxx-xx-xx <br/>
+
+                <br/>
+                <input type="input" name="user_skype" id="user_skype" value="{{ user.skype }}">
+                Skype ID <br/>
+
+                <br/>
+                <input type="input" name="user_twitter" id="user_twitter" value="{{ user.twitter }}">
+                Twitter ID (не URL!)<br/>
+
+                <br/>
+                <input type="input" name="user_fb" id="user_fb" value="{{ user.fb }}">
+                Facebook ID (не URL!) <br/> <font color="red">Используйте либо FB UID либо имя, если вы заменили. <br/>Пример http://www.facebook.com/bogdanovich.alex <<<< берем только bogdanovich.alex<br/></font>
+
+                <input type='hidden' name='uid' value='{{ user.id }}' />
+                <br/><br/>
+                <input type="button" name="save_u_set_button" id="save_u_set_button" onclick="Dajaxice.timecard.save_user_settings(Dajax.process, {'uid': uid.value, 'user_hb':user_hb.value, 'user_skype':user_skype.value,'user_twitter':user_twitter.value, 'user_fb':user_fb.value, 'user_phone':user_phone.value});" value="Сохранить настройки" />
+
+            </form>
+            <br/><br/>
+            <td></tr></table>
+
+    <br/><br/>
+
+    <table width="500" border="0" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+        <tr><td style="padding: 10px;" colspan="2">
+            <h3>Настройки аватарки <span id="msg_area_pic" style="color: gray"></span></h3>
+        </td></tr>
+
+        <tr>
+            <td style="padding: 10px;"  align="center" valign="top">
+                <div id="settings_current_avator" >
+                    <img
+                            src="{{ MEDIA_URL }}userpic/{{ user_avator }}"
+                            id="original_user_pic"
+                            name="logotype"
+                    />
+                </div>
+            </td>
+
+            <td style="padding: 10px;" valign="top">
+                <i>Текущая аватарка</i><br/>
+                <div id="user_details_area"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;" align="center" valign="top">
+                <div id="userpic_background" style="border: 1px groove black; width: 120px; height: 120px">
+                    <img src="{{ STATIC_URL }}css/images/0.png" id="card_logotype" name="logotype" />
+                </div>
+                <br/>
+                <br/>
+
+                <input type="button" name="save_user_avatar" id="save_user_avatar" disabled="disabled" onclick="Dajaxice.timecard.save_user_avatar(Dajax.process, {'uid': {{ user.id }} });" value="Сохранить" />
+
+                <br/>
+                Вы можете использовать FB аваторку<br/>
+                Достаточно указать FB ID в ваших настройках, <br/>сохранить настройки и аваторка будет видна ниже
+
+
+            </td>
+
+            <td style="padding: 10px;" valing="top">
+                <i>Изменяемая аватарка</i><br/>
+                <div id="user_details_area_edit"></div>
+                <br/>
+
+                <div style="padding: 5px; margin-bottom: 5px; border: 1px dotted gray; width: 300px; height: 50px">
+                    Форматы: JPG JPEG PNG BMP <br/>
+                    <form id="uploadphoto" target="upload_frame" enctype="multipart/form-data" action="/upload_logo/" method = "post">
+                        <input id="card_logo" name="card_logo" type="file" >
+                    </form>
+                </div>
+
+                <div style="padding: 5px; margin-bottom: 5px; border: 1px dotted gray; width: 300px; height: 50px">
+                    Вращение картинки
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type='hidden' name='uid' value='{{ user.id }}' />
+
+                        <input type="button" name="rotate_user_avatar" id="rotate_user_avatar" disabled="disabled" onclick="Dajaxice.timecard.user_image_rotate(Dajax.process, {'uid': uid.value});" value="Вращение на 90" />
+                    </form>
+                </div>
+
+                <div style="padding: 5px; margin-bottom: 5px; border: 1px dotted gray; width: 300px; height: 50px">
+                    Фильтры
+                    <br/>
+                    <select id="filters_type" name="filters_type" disabled="disabled">
+                        <option value="BLUR">размыть</option>
+                        <option value="CONTOUR">выделить контур</option>
+                        <option value="DETAIL">резкость</option>
+                        <option value="EDGE_ENHANCE">уточнить углы</option>
+                        <option value="EMBOSS">рельефность</option>
+                        <option value="FIND_EDGES">выделить края</option>
+                        <option value="SMOOTH">сгладить</option>
+                        <option value="SHARPEN">усилить резкость</option>
+                    </select>
+                    <input type="button" name="user_image_filters" id="user_image_filters" disabled="disabled" onclick="Dajaxice.timecard.user_image_filters(Dajax.process, {'uid': uid.value, 'filters_type': filters_type.value});" value="применить фильтр" />
+                </div>
+
+                <iframe id="upload_frame" name="upload_frame" style="display:none"></iframe>
+
+            </td></tr></table>
+
+    <br/><br/>
+
+    <table width="500" border="0" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+        <tr><td style="padding: 10px;" colspan="2">
+            <h3>Настройки модулей <span id="msg_area_mod" style="color: gray"></span></h3>
+            <br/><br/>
+            Коллеги! Включение модулей-информеров будет приводить к их подгрузке из удаленных ресурсов. Учитывая, что данные модули, к сожалению, доступны только через "открытый" http, а наша tt работает через "закрытый" https, может возникнуть конфликт при отображении этих модулей или могут появиться предупреждения о нарушениях безопасности.
+        </td></tr>
+
+        <tr>
+            <td style="padding: 10px;"  align="center" valign="top">Погода</td>
+            <td style="padding: 10px;"  align="center" valign="top">
+                <input type="button" name="user_mod1" id="user_mod1" onclick="Dajaxice.timecard.user_change_mod(Dajax.process, {'mod': 'mod1', 'button': this.id});" value="{{ mod1_label }}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"  align="center" valign="top">Bash.im</td>
+            <td style="padding: 10px;"  align="center" valign="top">
+                <input type="button" name="user_mod2" id="user_mod2" onclick="Dajaxice.timecard.user_change_mod(Dajax.process, {'mod': 'mod2', 'button': this.id});" value="{{ mod2_label }}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"  align="center" valign="top">Курсы валют</td>
+            <td style="padding: 10px;"  align="center" valign="top">
+                <input type="button" name="user_mod3" id="user_mod3" onclick="Dajaxice.timecard.user_change_mod(Dajax.process, {'mod': 'mod3', 'button': this.id});" value="{{ mod3_label }}" />
+            </td>
+        </tr>
+
+    </table>
+
+    {% if user.voted %}
+        <br/><br/>
+        <table width="500" border="0" style="background-color:#F7F7F7; border: #cccccc 1px solid; font-family:Tahoma; font-size:11px; color:#000000;" cellpadding="1" cellspacing="1">
+            <tr>
+                <a href="/settings/?drop_voice={{ user.id }}" >Обнулить мой голос в голосовании</a></tr>
+        </table>
+    {% endif %}
+
+{% endblock %}

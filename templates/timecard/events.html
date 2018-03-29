@@ -1,0 +1,58 @@
+{% extends "timecard/index.html" %}
+{% block page_title %}События{% endblock %}
+
+{% block events %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+<table width="500" cellpadding="1" cellspacing="1">
+<tr>
+<td style="padding: 10px;">
+{% if user_hb_list %}
+<h3>Список дней рождений {{ day }}</h3>
+</td></tr>
+       
+        {% for user in user_hb_list %}
+            <tr>
+                <td style="padding: 10px;">
+                    {% if user.avator %}
+                        <img src="{{ MEDIA_URL }}userpic/{{ user.avator }}" class="active"/>
+                    {% else %}
+                        <img src="{{ MEDIA_URL }}userpic/noavator.jpg" class="active"/>
+                    {% endif %}
+                
+                </td>
+                <td style="padding: 10px;">
+                <h2>{{ user.name }} {{ user.surname}} </h2>
+                <h4>команда {{ user.dep }}</h4>
+                </td>
+                </td>
+        {% endfor %}
+{% else %}
+<h3>Список дней рождений пуст</h3>
+</td></tr>
+{% endif %}
+</table>
+<br/>
+<hr width="70%">
+<br/>
+<h3>Статистика пришел-ушел событий | дата: {{ day }}</h3> 
+<br/>
+<img src="{{ STATIC_URL }}css/images/active_users.png"/>
+<br/>
+<br/>
+
+<img src='{{ STATIC_URL }}css/images/temp/temp_d.png'><br/><br/>
+<img src='{{ STATIC_URL }}css/images/temp/temp_w.png'><br/><br/>
+<img src='{{ STATIC_URL }}css/images/temp/temp_m.png'><br/><br/>
+<img src='{{ STATIC_URL }}css/images/temp/temp_y.png'><br/><br/>
+
+<br/>
+<br/>
+<h3>Статистика браузеров</h3> 
+<br/>
+<img src="{{ MEDIA_URL }}tt_data/ua_stat.jpg" />
+<br/><br/>
+
+{% endblock %}

@@ -1,0 +1,465 @@
+{% extends "timecard/index.html" %}
+{% block page_title %} Проект  {% endblock %}
+
+{% block projects %}
+    {% if custom_CSS %}
+        <link href="{{ STATIC_URL }}css/{{ custom_CSS }}" rel="stylesheet" type="text/css" media="all" />
+    {% endif %}
+
+<h3>Редактировани проекта {{projectInfo.project_name}}</h3>
+
+<script src="{{ STATIC_URL }}js/project.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" >
+$(document).ready(function() {
+    {% for appliedEmployee in appliedEmployees %}
+        $("#start_day_employee_on_project{{appliedEmployee.id}}").datepicker({
+            showOn: "button",
+            buttonImage: "/static/css/images/calendar.png",
+            dateFormat: "dd/mm/yy",
+            showAnim: "drop",
+            autoSize: true,
+            firstDay: 1,
+            buttonImageOnly: true
+        });
+        $("#finish_day_employee_on_project{{appliedEmployee.id}}").datepicker({
+            showOn: "button",
+            buttonImage: "/static/css/images/calendar.png",
+            dateFormat: "dd/mm/yy",
+            showAnim: "drop",
+            autoSize: true,
+            firstDay: 1,
+            buttonImageOnly: true
+        });
+    {% endfor %}
+});
+
+    var l = DD('l');
+    var allUploadedFiles = [];
+    var file = {};
+    {% for file in files %}
+        allUploadedFiles.push("{{file.fileId}}");
+    {% endfor  %}
+
+    var allUsers = [];
+
+    {% for user in users_ %}
+        allUsers[{{user.id}}] = {
+            "id": "{{user.id}}",
+            "name": "{{user.name}}",
+            "surname": "{{user.surname}}",
+            "order": "{{user.order}}",
+        };
+    {% endfor %}
+
+    var allUsersByOrder = [];
+    {% for user in users_ %}
+        allUsersByOrder[{{user.order}}] = {
+            "id": "{{user.id}}",
+            "name": "{{user.name}}",
+            "surname": "{{user.surname}}",
+            "order": "{{user.order}}",
+        };
+    {% endfor %}
+
+    var notAppliedOnProjectEmployee = [];
+    {% for user in notAppliedOnProjectEmployee %}
+        notAppliedOnProjectEmployee[{{user.order}}] = {
+            "userId": "{{user.id}}",
+            "order": "{{user.order}}",
+        }
+    {% endfor %}
+
+</script>
+
+<div id="tabs-1" style="color: #0f0f0f;" >
+    <table
+            width="100%"
+            class="project_table"
+            cellpadding="2"
+            cellspacing="0"
+    >
+        <tr>
+            <td>
+            <div style="padding: 10px;">
+                <table width="100%" cellpadding="1" cellspacing="1">
+                    <tr bgcolor="#E5F0FF">
+                        <td>
+                            <form id="main_form" method="post">
+                                {% csrf_token %}
+                                <input
+                                        type="text"
+                                        class="project_input"
+                                        name="project_name"
+                                        id="project_name"
+                                        value="{{projectInfo.project_name}}"
+                                >
+                                Название проекта
+                                <span
+                                    class="red_color"
+                                >*</span>
+
+                                <br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="project_desc"
+                                    id="project_desc"
+                                    value="{{projectInfo.project_desc}}"
+                                >
+                                Краткое описание проекта
+                                <br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="project_desc_for_customer"
+                                    id="project_desc_for_customer"
+                                    value="{{projectInfo.project_desc_for_customer}}"
+                                >
+                                Описание проекта для клиента [Benefits for Customer]<br/>
+
+                                <select
+                                    class="project_input"
+                                    name="customer"
+                                    id="customer"
+                                >
+                                    {% for customer in listCustomers %}
+                                        <option
+                                            value="{{customer.customer_id}}"
+                                            id="customer_{{customer.customer_id}}"
+                                            {% if customer.selected %} selected {% endif %}
+                                        >{{customer.name}}</option>
+                                    {% endfor %}
+                                </select>
+                                Заказчик [Customer]<span class="red_color">*</span><br/>
+
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="customer_feedback"
+                                    id="customer_feedback"
+                                    value="{{projectInfo.customer_feedback}}"
+
+                                >
+                                Customer's feedback<br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="service"
+                                    id="service"
+                                    value="{{projectInfo.service}}"
+                                >
+
+                                Сервис<br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="industry"
+                                    id="industry"
+                                    value="{{projectInfo.industry}}"
+                                >
+                                Industry<br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="solution_highlight"
+                                    id="solution_highlight"
+                                    value="{{projectInfo.solution_highlight}}"
+                                >
+                                Solution highlight<br/>
+                                <input type="text"
+                                       class="project_input"
+                                       name="development_tools_and_technologies"
+                                       id="development_tools_and_technologies"
+                                       value="{{projectInfo.development_tools_and_technologies}}"
+                                >
+                                Development Tools and technologies<br/>
+
+
+
+
+                                <input
+                                        type="text"
+                                        class="project_input"
+                                        name="development_time"
+                                        id="development_time"
+                                        value="{{projectInfo.development_time}}"
+                                >
+                                Development Time (in hours)<br/>
+
+
+
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="start_date" id="start_date"
+                                    value="{{projectInfo.start_date}}"
+                                    readonly="readonly"
+                                >
+                                Start Date<span class="red_color">*</span><br/>
+                                <input
+                                    type="text"
+                                    class="project_input"
+                                    name="finish_date"
+                                    id="finish_date"
+                                    value="{{projectInfo.finish_date}}"
+                                    readonly="readonly"
+                                >
+                                Finish Date<br/>
+
+
+
+
+
+                                <input
+                                        type="checkbox"
+                                        class="project_input"
+                                        name="project_is_in_pause"
+                                        id="project_is_in_pause"
+                                        {% if projectInfo.project_is_in_pause == True %} checked {% endif %}
+                                >
+                                Project is in pause
+
+                                <!-- [ {{projectInfo.project_is_in_pause}} ] -->
+
+                                <br/>
+
+
+                                <div id="div_add_employee_to_project" >
+                                    <div id="div_select_can_be_applied_on_project">
+                                        <select name="employee" id="employee">
+                                            {% for user in notAppliedOnProjectEmployee %}
+                                                <option
+                                                    value="{{user.id}}"
+                                                    id="employee_{{user.id}}"
+                                                >{{user.name}}&nbsp;{{user.surname}}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <div id="msg_error_apply_user"></div>
+                                        <div class="cl"></div>
+                                    </div>
+                                    <div
+                                        id="div_role_on_project"
+                                        >&nbsp;&nbsp; что выполняет на проекте &nbsp;&nbsp;
+                                        <input
+                                            type="text"
+                                            id="role_on_project"
+                                    /></div>
+                                    <div
+                                        id="div_apply_employee_to_project">
+                                        <a
+                                            class="apply_employee_to_real_project"
+                                            id="apply_employee_to_real_project{{projectInfo.id__}}"
+                                        >&nbsp;&nbsp; Добавить &nbsp;&nbsp;</a
+                                        >
+                                    </div>
+                                </div>
+                                <br/>
+                                <div id="div_applied_employees">
+                                    <ul id="applied_employees">
+                                        {% for appliedEmployee in appliedEmployees %}
+
+                                            <li
+                                                    class="li_appended_employee"
+                                                    id="li_appended_employee{{appliedEmployee.id}}"
+                                                    ><div
+                                                        class="div_applied_employee_info"
+                                                    ><div
+                                                        class="div_applied_employee_str"
+                                                    >{{appliedEmployee.name}}&nbsp;{{appliedEmployee.surname}}&nbsp;&nbsp;&nbsp;</div
+
+
+                                                    ><input
+                                                        class="inp_role_on_project"
+                                                        id="inp_role_on_project{{appliedEmployee.id}}"
+                                                        type="text"
+                                                        value="{{appliedEmployee.role_info__.0.roleOnProject}}"
+                                                    /></div
+                                                    ><div class="div_start_day_employee_on_project"
+                                                    ><input
+                                                        type="text"
+                                                        class="start_day_employee_on_project"
+                                                        readonly="readonly"
+                                                        id="start_day_employee_on_project{{appliedEmployee.id}}"
+
+                                                        value="{{appliedEmployee.role_info__.0.startDayOnProject}}"
+
+                                                    ><div class="alt_text_start_day_employee_on_project"
+                                                        >Дата старта</div
+                                                    ></div
+                                                    ><div class="div_finish_day_employee_on_project"
+                                                    ><input
+                                                        type="text"
+                                                        class="finish_day_employee_on_project"
+                                                        readonly="readonly"
+                                                        id="finish_day_employee_on_project{{appliedEmployee.id}}"
+
+                                                        value="{{appliedEmployee.role_info__.0.finishDayOnProject}}"
+
+                                                    ><div class="alt_text_finish_day_employee_on_project"
+                                                        >Дата окончания</div
+                                                    ></div
+
+
+                                                    ><div
+                                                        class="div_button_refresh_role_real_project"
+                                                        id="div_button_refresh_role_real_project{{appliedEmployee.id}}"
+                                                    ><img
+                                                        src="/static/images/refresh_small.png"
+                                                    /></div
+
+                                                    ><div
+                                                        class="div_remove_from_real_project_from_appended"
+                                                        id="div_remove_from_real_project_from_appended{{appliedEmployee.id}}"
+                                                    ><img
+                                                        src="/static/images/cross.png"
+                                                    ></div
+
+
+                                                    ><div class="cl"></div
+                                                    ></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </form>
+
+
+                            <div id="wrapper_upl_div" >
+                            <div id="upl_div" >
+                                <form
+                                    id="upload"
+                                    method="post"
+                                    action="/projects-upload-files-to-real-project/"
+                                    enctype="multipart/form-data"
+                                >
+                                    <!--<div>projectId{{projectInfo.id__}}</div>-->
+                                    <input type="hidden" name="projectId" value="{{projectInfo.id__}}">
+                                    <div id="drop">
+                                        Drop Files Here
+                                        <a>Browse</a>
+                                        <input type="file" name="uploaded_file" multiple />
+                                    </div>
+                                    <ul id="_ul_uploaded_files_real_project">
+                                        <!-- The file uploads will be shown here -->
+
+
+
+
+
+
+                                        {% for file in files %}
+                                        <li class="uploaded_file" id="uploaded_file_{{file.fileId}}" >
+                                            <div style="display:inline;width:48px;height:48px;">
+                                                <canvas width="48" height="48px"></canvas>
+                                                <input
+                                                        type="text"
+                                                        value="0"
+                                                        data-width="48"
+                                                        data-height="48"
+                                                        data-fgcolor="#0788a5"
+                                                        data-readonly="1"
+                                                        data-bgcolor="#3e4043"
+                                                        readonly="readonly"
+                                                        style=" width: 28px;
+                                                                height: 16px;
+                                                                position: absolute;
+                                                                vertical-align: middle;
+                                                                margin-top: 16px;
+                                                                margin-left: -38px;
+                                                                border: 0px;
+                                                                font-weight: bold;
+                                                                font-style: normal;
+                                                                font-variant: normal;
+                                                                font-size: 9px;
+                                                                line-height: normal;
+                                                                font-family: Arial;
+                                                                text-align: center;
+                                                                color: rgb(7, 136, 165);
+                                                                padding: 0px;
+                                                                -webkit-appearance: none;
+                                                                background: none;"
+                                            >
+                                            </div>
+                                            <p>{{file.fileName}}<i>{{file.fileName}} KB</i></p>
+                                            <span></span>
+
+                                        </li>
+                                        {% endfor %}
+
+
+                                    </ul>
+                                </form>
+                            </div>
+                            </div>
+
+                            <div id="uploaded_descriptions">
+                                <ul>
+                                    {% for file in files %}
+                                        <li class="li_uploaded_description" id="li_uploaded_description_{{file.fileId}}">
+                                            <div>Описание файла</div>
+                                            <input
+                                                    class="input_uploaded_description"
+                                                    id="input_uploaded_description_{{file.fileId}}"
+                                                    type="text"
+                                                    value="{{file.fileDescription}}"
+                                            />
+                                                <div
+                                                    class="div_button_update_file_desc_real_project"
+                                                    id="div_button_update_file_desc_real_project_{{file.fileId}}"
+                                                >
+                                                <img
+                                                    src="{{STATIC_URL}}/images/kuba_icon_ok_small.png"
+                                                />
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <div class="cl"></div>
+
+
+
+                            <div id="project_update_button">
+                                <a
+                                    id="projects_update_project"
+                                >Обновить</a>
+                            </div>
+                            <div id="project_update_div_message" ></div>
+                            <div class="cl" ></div>
+
+
+                            <div id="project_close_div_message"
+                            >Закрыть проект</div>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+            </div>
+        </td></tr>
+    </table>
+    <div id="msg_project"></div>
+    <br/>
+    <div id="msg_area_project_error"></div>
+    <br/>
+    <div id="msg_area_project"></div>
+    <br/>
+    <table class="zebra" width=100%>
+        {% for project in projects %}
+            {% if project.project_opened %}
+            <tr>
+                <td>
+                    <strong>{{ project.project_name }}</strong>   |    <i>{{ project.project_desc }}</i><br/><br/>
+                </td>
+                <td>
+                    <a href="#pddp" style="color:#2970A6 " onclick="Dajaxice.timecard.show_project_deletetion_confirmation_form(Dajax.process, {'pid':{{ project.id }}});">закрыть проект</a>
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <div id="pddp" style="background: #ffb6c1; text-align: center;"></div>
+</div>
+
+{% endblock %}
